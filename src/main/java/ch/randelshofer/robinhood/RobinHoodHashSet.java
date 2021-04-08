@@ -1,10 +1,12 @@
 package ch.randelshofer.robinhood;
 
 
+import java.math.BigInteger;
 import java.util.AbstractSet;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
+import java.util.IntSummaryStatistics;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -268,7 +270,6 @@ public class RobinHoodHashSet<E> extends AbstractSet<E> implements Cloneable {
                 index = 0;
                 ekey = ekey - table.length;
             }
-
         }
     }
 
@@ -416,8 +417,24 @@ public class RobinHoodHashSet<E> extends AbstractSet<E> implements Cloneable {
         }
     }
 
+
+    public int getCapacity() {
+        return table.length;
+    }
+
+    public IntSummaryStatistics getCostStatistics() {
+        IntSummaryStatistics stats=new IntSummaryStatistics();
+        for (int i=0;i<table.length;i++) {
+            if (table[i]!=null)
+            stats.accept(getCost(i));
+        }
+        return stats;
+    }
+
     private void resize(int desiredCapacity) {
         int newCapacity = min(desiredCapacity, Integer.MAX_VALUE - 8);
+        long nextPrime = BigInteger.valueOf(newCapacity).nextProbablePrime().longValue();
+        if (nextPrime<Integer.MAX_VALUE)newCapacity=(int)nextPrime;
         computeMinMaxLoad(newCapacity);
         if (desiredCapacity > size && maxLoad < size) {
             throw new IllegalStateException("unable to resize");

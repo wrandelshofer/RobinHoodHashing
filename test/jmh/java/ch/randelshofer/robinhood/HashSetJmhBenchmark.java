@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
  * # Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz
  *
  * Benchmark        Mode  Cnt         Score        Error  Units
- * Add              avgt   25  26_69559.029 ±  10537.523  ns/op
+ * Add              avgt   25  16_39976.379 ±  29641.235  ns/op
  * AddAndGrow       avgt   25  55_09892.521 ± 168496.115  ns/op
  * Clone            avgt   25  26_01282.848 ±  30392.642  ns/op
  * Remove           avgt   25  62_08743.152 ± 336646.110  ns/op
@@ -31,29 +31,31 @@ public class HashSetJmhBenchmark {
 
     private static final HashSet<Integer> CONSTANT_SET;
 
+    public static final int CAPACITY = 134_000;
+
     static {
         Random rng = new Random(0);
-        HashSet<Integer> set = new HashSet<>(134_000);
+        HashSet<Integer> set = new HashSet<>(CAPACITY);
         for (int i = 0; i < VALUE_SET.length; ) {
             int v = rng.nextInt(500_000);
             if (set.add(v)) {
                 VALUE_SET[i++] = v;
             }
         }
-        CONSTANT_SET = set;
         for (int i = 0; i < VALUE_SET.length; ) {
             int v = rng.nextInt(500_000);
             if (!set.contains(v)) {
                 NOT_IN_VALUE_SET[i++] = v;
             }
         }
+        CONSTANT_SET = set;
     }
 
-    //@Benchmark
+    @Benchmark
     @OutputTimeUnit(TimeUnit.NANOSECONDS)
     @BenchmarkMode(Mode.AverageTime)
     public void measureAdd() {
-        RobinHoodHashSet<Integer> set = new RobinHoodHashSet<>(134_000);
+        HashSet<Integer> set = new HashSet<>(CAPACITY);
         for (Integer v : VALUE_SET) {
             set.add(v);
         }
@@ -69,14 +71,14 @@ public class HashSetJmhBenchmark {
         }
     }
 
-    @Benchmark
+    //@Benchmark
     @OutputTimeUnit(TimeUnit.NANOSECONDS)
     @BenchmarkMode(Mode.AverageTime)
     public void measureClone() {
         HashSet<Integer> set = (HashSet<Integer>) CONSTANT_SET.clone();
     }
 
-    @Benchmark
+    //@Benchmark
     @OutputTimeUnit(TimeUnit.NANOSECONDS)
     @BenchmarkMode(Mode.AverageTime)
     public void measureRemove() {
@@ -86,7 +88,7 @@ public class HashSetJmhBenchmark {
         }
     }
 
-    @Benchmark
+    //@Benchmark
     @OutputTimeUnit(TimeUnit.NANOSECONDS)
     @BenchmarkMode(Mode.AverageTime)
     public void measureSuccessfulGet() {
@@ -96,7 +98,7 @@ public class HashSetJmhBenchmark {
         }
     }
 
-    @Benchmark
+    //@Benchmark
     @OutputTimeUnit(TimeUnit.NANOSECONDS)
     @BenchmarkMode(Mode.AverageTime)
     public void measureUnsuccessfulGet() {

@@ -5,6 +5,7 @@ import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 
+import java.math.BigInteger;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -43,9 +44,11 @@ public class RobinHoodHashSetJmhBenchmark {
 
     private static final RobinHoodHashSet<Integer> CONSTANT_SET;
 
+    public static final int CAPACITY = 134_000;
+
     static {
         Random rng = new Random(0);
-        RobinHoodHashSet<Integer> set = new RobinHoodHashSet<>(262_144);
+        RobinHoodHashSet<Integer> set = new RobinHoodHashSet<>(CAPACITY);
         for (int i = 0; i < VALUE_SET.length; ) {
             int v = rng.nextInt(500_000);
             if (set.add(v)) {
@@ -59,19 +62,22 @@ public class RobinHoodHashSetJmhBenchmark {
                 NOT_IN_VALUE_SET[i++] = v;
             }
         }
+        System.out.println("CONSTANT_SET.size     : "+set.size());
+        System.out.println("CONSTANT_SET.capacity : "+set.getCapacity());
+        System.out.println("CONSTANT_SET.costStats; "+set.getCostStatistics());
     }
 
-    //@Benchmark
+   @Benchmark
     @OutputTimeUnit(TimeUnit.NANOSECONDS)
     @BenchmarkMode(Mode.AverageTime)
     public void measureAdd() {
-        RobinHoodHashSet<Integer> set = new RobinHoodHashSet<>(262_144);
+        RobinHoodHashSet<Integer> set = new RobinHoodHashSet<>(CAPACITY);
         for (Integer v : VALUE_SET) {
             set.add(v);
         }
     }
 
-    //@Benchmark
+    @Benchmark
     @OutputTimeUnit(TimeUnit.NANOSECONDS)
     @BenchmarkMode(Mode.AverageTime)
     public void measureAddAndGrow() {
@@ -108,7 +114,7 @@ public class RobinHoodHashSetJmhBenchmark {
         }
     }
 
-    @Benchmark
+   @Benchmark
     @OutputTimeUnit(TimeUnit.NANOSECONDS)
     @BenchmarkMode(Mode.AverageTime)
     public void measureUnsuccessfulGet() {

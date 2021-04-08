@@ -15,7 +15,6 @@ import java.util.concurrent.TimeUnit;
  * # VM version: JDK 16, OpenJDK 64-Bit Server VM, 16+36 (Azul Zulu)
  * # Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz
  *
- *
  * Benchmark        Mode  Cnt         Score        Error  Units
  * Add              avgt   25  35_35299.784 ±  98982.257  ns/op
  * AddAndGrow       avgt   25  72_30405.351 ± 139407.997  ns/op
@@ -32,7 +31,7 @@ public class LinkedRobinHoodHashSetJmhBenchmark {
 
     private static final LinkedRobinHoodHashSet<Integer> CONSTANT_SET;
 
-    public static final int CAPACITY = 134_000;
+    public static final int CAPACITY = 134000;
 
     static {
         Random rng = new Random(0);
@@ -43,13 +42,16 @@ public class LinkedRobinHoodHashSetJmhBenchmark {
                 VALUE_SET[i++] = v;
             }
         }
-        CONSTANT_SET = set;
         for (int i = 0; i < VALUE_SET.length; ) {
             int v = rng.nextInt(500_000);
             if (!set.contains(v)) {
                 NOT_IN_VALUE_SET[i++] = v;
             }
         }
+        CONSTANT_SET = set;
+        System.out.println("CONSTANT_SET.size     : "+set.size());
+        System.out.println("CONSTANT_SET.capacity : "+set.getCapacity());
+        System.out.println("CONSTANT_SET.costStats; "+set.getCostStatistics());
     }
 
 

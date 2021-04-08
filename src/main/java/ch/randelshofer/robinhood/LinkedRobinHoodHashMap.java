@@ -1,6 +1,7 @@
 package ch.randelshofer.robinhood;
 
 
+import java.math.BigInteger;
 import java.util.AbstractMap;
 import java.util.AbstractSet;
 import java.util.Arrays;
@@ -18,7 +19,7 @@ import static java.lang.Math.min;
  * Robin Hood Hash Map that keeps the iteration order the same as the order in
  * which the elements were inserted.
  */
-public class LinkedRobinHoodHashMap<K,V> extends AbstractMap<K,V> implements Cloneable {
+public class LinkedRobinHoodHashMap<K, V> extends AbstractMap<K, V> implements Cloneable {
     public static final int MIN_ARRAY_SIZE = 16;
     /**
      * Factor for growing the table when the load factor would exceed
@@ -45,15 +46,15 @@ public class LinkedRobinHoodHashMap<K,V> extends AbstractMap<K,V> implements Clo
      */
     private final float maxLoadFactor;
 
-    private Node<K,V> first, last;
+    private Node<K, V> first, last;
 
-    private Node<K,V>[] table;
+    private Node<K, V>[] table;
 
-    private static class Node<K,V> implements Map.Entry<K,V>{
+    private static class Node<K, V> implements Map.Entry<K, V> {
         private final int memo;
         private final K key;
-        private  V value;
-        private Node<K,V> next, prev;
+        private V value;
+        private Node<K, V> next, prev;
 
         private Node(int memo, K key, V value) {
             this.memo = memo;
@@ -78,8 +79,9 @@ public class LinkedRobinHoodHashMap<K,V> extends AbstractMap<K,V> implements Clo
 
         @Override
         public boolean equals(Object o) {
-            if (!(o instanceof Map.Entry))
+            if (!(o instanceof Map.Entry)) {
                 return false;
+            }
             Map.Entry<?, ?> e = (Map.Entry<?, ?>) o;
             return Objects.equals(key, e.getKey()) && Objects.equals(value, e.getValue());
         }
@@ -227,14 +229,14 @@ public class LinkedRobinHoodHashMap<K,V> extends AbstractMap<K,V> implements Clo
             }
             int index = -result - 1;
             shiftRight(index);
-            setAndLinkElement(e,v, index, m);
+            setAndLinkElement(e, v, index, m);
             size++;
             modCount++;
             return null;
         } else {
-            Node<K,V> node = table[result];
-            V oldValue=node.value;
-            node.value=v;
+            Node<K, V> node = table[result];
+            V oldValue = node.value;
+            node.value = v;
             return oldValue;
         }
     }
@@ -249,12 +251,12 @@ public class LinkedRobinHoodHashMap<K,V> extends AbstractMap<K,V> implements Clo
     }
 
     @Override
-    public LinkedRobinHoodHashMap<K,V> clone() {
+    public LinkedRobinHoodHashMap<K, V> clone() {
         try {
             @SuppressWarnings("unchecked")
-            LinkedRobinHoodHashMap<K,V> that = (LinkedRobinHoodHashMap<K,V>) super.clone();
+            LinkedRobinHoodHashMap<K, V> that = (LinkedRobinHoodHashMap<K, V>) super.clone();
             @SuppressWarnings("unchecked")
-            Node<K,V>[] suppress =(Node<K,V>[]) new Node[this.table.length];
+            Node<K, V>[] suppress = (Node<K, V>[]) new Node[this.table.length];
             that.table = suppress;
             that.first = that.last = null;
             that.size = 0;
@@ -275,6 +277,7 @@ public class LinkedRobinHoodHashMap<K,V> extends AbstractMap<K,V> implements Clo
     public boolean containsKey(Object o) {
         return find(o, memo(o)) >= 0;
     }
+
     @Override
     public V get(Object o) {
         int result = find(o, memo(o));
@@ -343,7 +346,7 @@ public class LinkedRobinHoodHashMap<K,V> extends AbstractMap<K,V> implements Clo
      * Gets {@code k} for the bucket {@code i}.
      */
     private int getKey(int i) {
-        Node<K,V> node = table[i];
+        Node<K, V> node = table[i];
         if (node == null) {
             return Integer.MAX_VALUE;
         }
@@ -356,7 +359,7 @@ public class LinkedRobinHoodHashMap<K,V> extends AbstractMap<K,V> implements Clo
      * Gets {@code c} for the bucket {@code i}.
      */
     private int getCost(int i) {
-        Node<K,V> node = table[i];
+        Node<K, V> node = table[i];
         if (node == null) {
             return 0;
         }
@@ -388,7 +391,7 @@ public class LinkedRobinHoodHashMap<K,V> extends AbstractMap<K,V> implements Clo
     @Override
     public Set<Entry<K, V>> entrySet() {
         class SetIterator implements Iterator<Entry<K, V>> {
-            Node <K,V>node = first;
+            Node<K, V> node = first;
             final int mod = modCount;
 
             @Override
@@ -405,15 +408,15 @@ public class LinkedRobinHoodHashMap<K,V> extends AbstractMap<K,V> implements Clo
                     throw new NoSuchElementException();
                 }
                 @SuppressWarnings("unchecked")
-                Node<K,V> next = node;
+                Node<K, V> next = node;
                 node = node.next;
                 return next;
             }
         }
-        class EntrySet extends AbstractSet<Map.Entry<K,V>> {
+        class EntrySet extends AbstractSet<Map.Entry<K, V>> {
 
             @Override
-            public Iterator<Map.Entry<K,V>> iterator() {
+            public Iterator<Map.Entry<K, V>> iterator() {
                 return new SetIterator();
             }
 
@@ -447,7 +450,7 @@ public class LinkedRobinHoodHashMap<K,V> extends AbstractMap<K,V> implements Clo
                 result = find(o, m);
             }
             int index = result;
-            Node<K,V> node=table[index];
+            Node<K, V> node = table[index];
             unlinkElement(index);
             shiftLeft(index);
             size--;
@@ -458,17 +461,21 @@ public class LinkedRobinHoodHashMap<K,V> extends AbstractMap<K,V> implements Clo
 
     private void resize(int desiredCapacity) {
         int newCapacity = min(desiredCapacity, Integer.MAX_VALUE - 8);
+        long nextPrime = BigInteger.valueOf(newCapacity).nextProbablePrime().longValue();
+        if (nextPrime < Integer.MAX_VALUE) {
+            newCapacity = (int) nextPrime;
+        }
         computeMinMaxLoad(newCapacity);
         if (desiredCapacity > size && maxLoad < size) {
             throw new IllegalStateException("unable to resize");
         }
 
-        Node<K,V>[] oldElements = table;
+        Node<K, V>[] oldElements = table;
         @SuppressWarnings("unchecked")
-        Node<K,V>[] suppress = (Node<K,V>[])new Node[newCapacity];
+        Node<K, V>[] suppress = (Node<K, V>[]) new Node[newCapacity];
         this.table = suppress;
 
-        for (Node<K,V> e : oldElements) {
+        for (Node<K, V> e : oldElements) {
             if (e != null) {
                 int index = findInsertionIndex(hash(e.memo));
                 shiftRight(index);
@@ -477,8 +484,8 @@ public class LinkedRobinHoodHashMap<K,V> extends AbstractMap<K,V> implements Clo
         }
     }
 
-    private void setAndLinkElement(K e,V v, int index, int m) {
-        Node<K,V> node = new Node<>(m, e,v);
+    private void setAndLinkElement(K e, V v, int index, int m) {
+        Node<K, V> node = new Node<>(m, e, v);
         table[index] = node;
         if (first == null) {
             first = last = node;
@@ -554,7 +561,7 @@ public class LinkedRobinHoodHashMap<K,V> extends AbstractMap<K,V> implements Clo
     }
 
     private void unlinkElement(int index) {
-        Node<K,V> node = table[index];
+        Node<K, V> node = table[index];
         //table[index] = null;
         if (node.prev == null) {
             first = node.next;
