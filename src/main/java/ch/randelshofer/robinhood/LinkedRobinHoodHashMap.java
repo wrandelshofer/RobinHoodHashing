@@ -8,6 +8,7 @@ import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Set;
 
 import static java.lang.Math.max;
@@ -73,6 +74,19 @@ public class LinkedRobinHoodHashMap<K,V> extends AbstractMap<K,V> implements Clo
         @Override
         public V setValue(V value) {
             return null;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof Map.Entry))
+                return false;
+            Map.Entry<?, ?> e = (Map.Entry<?, ?>) o;
+            return Objects.equals(key, e.getKey()) && Objects.equals(value, e.getValue());
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(key) ^ Objects.hashCode(value);
         }
     }
 
