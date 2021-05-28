@@ -5,12 +5,16 @@ import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * Tests the performance of a large immutable set created with
+ * {@link Set#copyOf(Collection)};. Such a set is an open addressing
+ * hash table with a load factor of exactly 50 %.
  * <pre>
  * # JMH version: 1.28
  * # VM version: JDK 16, OpenJDK 64-Bit Server VM, 16+36 (Azul Zulu)
@@ -32,9 +36,10 @@ public class SetOfJmhBenchmark {
 
     static {
         Random rng = new Random(0);
-        HashSet<Integer> set = new HashSet<>(134_000);
+        HashSet<Integer> set = new HashSet<>(2*VALUE_SET.length);
         for (int i = 0; i < VALUE_SET.length; ) {
             int v = rng.nextInt(500_000);
+            v=Integer.reverse(v);
             if (set.add(v)) {
                 VALUE_SET[i++] = v;
             }

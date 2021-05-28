@@ -344,22 +344,22 @@ public class RobinHoodHashSetTwoArrays<E> extends AbstractSet<E> implements Clon
      * {@code index} is the last unsuccessfully probed index
      * in the array.
      */
-    private int find(Object e, int m) {
+    private int find(Object desired, int m) {
         if (memos.length==0)return -1;
-        int ehash = hash(m);
-        int index = ehash;
-        int ekey = ehash;
+        int desiredHash = hash(m);
+        int index = desiredHash;
+        int desiredKey = desiredHash;
 
         while (true) {
-            int eekey = getKey(index);
-            if (eekey > ekey) {
+            int candidateKey = getKey(index);
+            if (candidateKey > desiredKey) {
                 return -index - 1;
-            } else if (eekey == ekey && e.equals(getElement(index))) {
+            } else if (candidateKey == desiredKey && desired.equals(getElement(index))) {
                 return index;
             } else {
                 if (++index == elements.length) {
                     index = 0;
-                    ekey = ekey - elements.length;
+                    desiredKey = desiredKey - elements.length;
                 }
             }
         }

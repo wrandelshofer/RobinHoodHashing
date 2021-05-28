@@ -31,7 +31,7 @@ public class HashSetJmhBenchmark {
 
     private static final HashSet<Integer> CONSTANT_SET;
 
-    public static final int CAPACITY = 134_000;
+    public static final int CAPACITY = 262_144;
 
     static {
         Random rng = new Random(0);

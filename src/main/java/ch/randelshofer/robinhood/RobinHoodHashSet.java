@@ -251,24 +251,34 @@ public class RobinHoodHashSet<E> extends AbstractSet<E> implements Cloneable {
      * If the element is absent returns {@code (-index - 1)} where
      * {@code index} is the last unsuccessfully probed index
      * in the array.
+     *
+     * @param desired the object to be found
+     * @param m       the hashCode of the object to be found
      */
-    private int find(Object e, int m) {
+    private int find(Object desired, int m) {
         if (table.length == 0) {
             return -1;
         }
-        int ehash = hash(m);
-        int index = ehash;
-        int ekey = ehash;
+        int desiredHash = hash(m);
+        int index = desiredHash;
+        int desiredKey = desiredHash;
 
         while (true) {
-            int eekey = getKey(index);
-            if (eekey > ekey) {
+            E candidate = getElement(index);
+            if (candidate == null) {
                 return -index - 1;
-            } else if (eekey == ekey && e.equals(getElement(index))) {
+            }
+            if (desired.equals(candidate)) {
                 return index;
-            } else if (++index == table.length) {
-                index = 0;
-                ekey = ekey - table.length;
+            }
+            int candidateKey = getKey(candidate, index);
+            if (candidateKey > desiredKey) {
+                return -index - 1;
+            } else {
+                if (++index == table.length) {
+                    index = 0;
+                    desiredKey = desiredKey - table.length;
+                }
             }
         }
     }
@@ -315,6 +325,14 @@ public class RobinHoodHashSet<E> extends AbstractSet<E> implements Cloneable {
      */
     private int getKey(int i) {
         E e = table[i];
+        if (e == null) {
+            return Integer.MAX_VALUE;
+        }
+        int h = hash(e);
+        return h <= i ? h : h - table.length;
+    }
+
+    private int getKey(E e, int i) {
         if (e == null) {
             return Integer.MAX_VALUE;
         }
@@ -423,10 +441,11 @@ public class RobinHoodHashSet<E> extends AbstractSet<E> implements Cloneable {
     }
 
     public IntSummaryStatistics getCostStatistics() {
-        IntSummaryStatistics stats=new IntSummaryStatistics();
-        for (int i=0;i<table.length;i++) {
-            if (table[i]!=null)
-            stats.accept(getCost(i));
+        IntSummaryStatistics stats = new IntSummaryStatistics();
+        for (int i = 0; i < table.length; i++) {
+            if (table[i] != null) {
+                stats.accept(getCost(i));
+            }
         }
         return stats;
     }
@@ -434,7 +453,9 @@ public class RobinHoodHashSet<E> extends AbstractSet<E> implements Cloneable {
     private void resize(int desiredCapacity) {
         int newCapacity = min(desiredCapacity, Integer.MAX_VALUE - 8);
         long nextPrime = BigInteger.valueOf(newCapacity).nextProbablePrime().longValue();
-        if (nextPrime<Integer.MAX_VALUE)newCapacity=(int)nextPrime;
+        if (nextPrime < Integer.MAX_VALUE) {
+            newCapacity = (int) nextPrime;
+        }
         computeMinMaxLoad(newCapacity);
         if (desiredCapacity > size && maxLoad < size) {
             throw new IllegalStateException("unable to resize");

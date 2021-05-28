@@ -5,7 +5,6 @@ import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 
-import java.math.BigInteger;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -17,10 +16,12 @@ import java.util.concurrent.TimeUnit;
  * # Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz
  *
  * Benchmark        Mode  Cnt         Score       Error  Units
- * Clone            avgt   25    _73802.372 ±   932.618  ns/op
- * Remove           avgt   25  54_50882.281 ± 92446.490  ns/op
- * SuccessfulGet    avgt   25  13_59960.953 ± 75048.110  ns/op
- * UnsuccessfulGet  avgt   25  16_49366.959 ± 78153.302  ns/op
+ * Add              avgt   25  16_86851.334 ±  88541.440  ns/op
+ * AddAndGrow       avgt   25  56_36719.890 ±  64252.818  ns/op
+ * Clone            avgt   25    _75306.313 ±    623.763  ns/op
+ * Remove           avgt   25  58_25579.565 ± 172365.295  ns/op
+ * SuccessfulGet    avgt   25   9_41635.359 ±  16633.349  ns/op
+ * UnsuccessfulGet  avgt   25  14_80041.841 ±  47867.423  ns/op
  * </pre>
  * With capacity set to 134_000:
  * <pre>
@@ -44,7 +45,7 @@ public class RobinHoodHashSetJmhBenchmark {
 
     private static final RobinHoodHashSet<Integer> CONSTANT_SET;
 
-    public static final int CAPACITY = 134_000;
+    public static final int CAPACITY = 262_144;
 
     static {
         Random rng = new Random(0);
@@ -62,12 +63,14 @@ public class RobinHoodHashSetJmhBenchmark {
                 NOT_IN_VALUE_SET[i++] = v;
             }
         }
+        /*
         System.out.println("CONSTANT_SET.size     : "+set.size());
         System.out.println("CONSTANT_SET.capacity : "+set.getCapacity());
         System.out.println("CONSTANT_SET.costStats; "+set.getCostStatistics());
+         */
     }
 
-   @Benchmark
+    @Benchmark
     @OutputTimeUnit(TimeUnit.NANOSECONDS)
     @BenchmarkMode(Mode.AverageTime)
     public void measureAdd() {
@@ -114,7 +117,7 @@ public class RobinHoodHashSetJmhBenchmark {
         }
     }
 
-   @Benchmark
+    @Benchmark
     @OutputTimeUnit(TimeUnit.NANOSECONDS)
     @BenchmarkMode(Mode.AverageTime)
     public void measureUnsuccessfulGet() {
