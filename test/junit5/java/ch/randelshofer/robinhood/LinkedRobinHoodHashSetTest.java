@@ -4,8 +4,8 @@ import java.util.Set;
 
 class LinkedRobinHoodHashSetTest extends AbstractSetTest {
     @Override
-    protected <T> Set<T> create(int initialCapacity, float maxLoadFactor, float growFactor, float minLoadFactor) {
-        return new RobinHoodHashSet<>(initialCapacity, maxLoadFactor, growFactor, minLoadFactor);
+    protected <T> Set<T> create(int expectedMaxSize, float maxLoadFactor) {
+        return new LinkedRobinHoodHashSet<>(expectedMaxSize, maxLoadFactor);
     }
 
 }

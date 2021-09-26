@@ -6,55 +6,40 @@ import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 
 import java.util.LinkedHashSet;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 /**
  * <pre>
  * # JMH version: 1.28
- * # VM version: JDK 16, OpenJDK 64-Bit Server VM, 16+36 (Azul Zulu)
+ * # VM version: JDK 17, OpenJDK 64-Bit Server VM, 17+35-2724
  * # Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz
  *
- * Benchmark        Mode  Cnt         Score        Error  Units
- * Add              avgt   25  26_66328.137 ±  16793.643  ns/op
- * AddAndGrow       avgt   25  59_48198.331 ± 174289.648  ns/op
- * Clone            avgt   25  22_56326.641 ±  25625.761  ns/op
- * Remove           avgt   25  38_43179.229 ± 120510.939  ns/op
- * SuccessfulGet    avgt   25   7_59121.216 ±  33160.601  ns/op
- * UnsuccessfulGet  avgt   25   6_24672.767 ±   1875.119  ns/op
+ * Benchmark                                           Mode  Cnt        Score        Error  Units
+ * LinkedHashSetJmhBenchmark.measureAddAll             avgt   25  27_37885.389 ±  13970.390  ns/op
+ * LinkedHashSetJmhBenchmark.measureAddAllAndGrow      avgt   25  65_93559.077 ±  82907.057  ns/op
+ * LinkedHashSetJmhBenchmark.measureClone              avgt   25  27_00501.805 ±  31556.177  ns/op
+ * LinkedHashSetJmhBenchmark.measureCloneAndRemoveAll  avgt   25  61_02244.271 ± 140276.599  ns/op
+ * LinkedHashSetJmhBenchmark.measureRemoveAdd          avgt   25        61.085 ±      1.013  ns/op
+ * LinkedHashSetJmhBenchmark.measureSuccessfulGet      avgt   25        18.704 ±      0.354  ns/op
+ * LinkedHashSetJmhBenchmark.measureUnsuccessfulGet    avgt   25        10.310 ±      0.048  ns/op
  * </pre>
  */
 public class LinkedHashSetJmhBenchmark {
+    private static int index;
+    private static BenchmarkDataSet DATA_SET =new BenchmarkDataSet(100_000, 0, 500_000);
 
-    private static final int[] VALUE_SET = new int[100_000];
-    private static final int[] NOT_IN_VALUE_SET = new int[100_000];
-
-    private static final LinkedHashSet<Integer> CONSTANT_SET;
-
+    private static final LinkedHashSet<BenchmarkDataSet.Key> CONSTANT_SET = new LinkedHashSet<>(DATA_SET.constantIdentitySet);
     static {
-        Random rng = new Random(0);
-        LinkedHashSet<Integer> set = new LinkedHashSet<>(134_000);
-        for (int i = 0; i < VALUE_SET.length; ) {
-            int v = rng.nextInt(500_000);
-            if (set.add(v)) {
-                VALUE_SET[i++] = v;
-            }
-        }
-        CONSTANT_SET = set;
-        for (int i = 0; i < VALUE_SET.length; ) {
-            int v = rng.nextInt(500_000);
-            if (!set.contains(v)) {
-                NOT_IN_VALUE_SET[i++] = v;
-            }
-        }
+        System.out.println("LinkedHashSet size:"+CONSTANT_SET.size());
     }
-
     @Benchmark
     @OutputTimeUnit(TimeUnit.NANOSECONDS)
     @BenchmarkMode(Mode.AverageTime)
-    public void measureAdd() {
-        RobinHoodHashSet<Integer> set = new RobinHoodHashSet<>(134_000);
-        for (Integer v : VALUE_SET) {
+    public void measureAddAll() {
+        LinkedHashSet<BenchmarkDataSet.Key> set = new LinkedHashSet<>(
+                DATA_SET.constantIdentitySet.size()*2,
+                0.75f);
+        for (BenchmarkDataSet.Key v : DATA_SET.valuesInSet) {
             set.add(v);
         }
     }
@@ -62,9 +47,11 @@ public class LinkedHashSetJmhBenchmark {
     @Benchmark
     @OutputTimeUnit(TimeUnit.NANOSECONDS)
     @BenchmarkMode(Mode.AverageTime)
-    public void measureAddAndGrow() {
-        LinkedHashSet<Integer> set = new LinkedHashSet<>();
-        for (int v : VALUE_SET) {
+    public void measureAddAllAndGrow() {
+        LinkedHashSet<BenchmarkDataSet.Key> set = new LinkedHashSet<>(
+                16,
+                0.75f);
+        for (BenchmarkDataSet.Key v : DATA_SET.valuesInSet) {
             set.add(v);
         }
     }
@@ -73,36 +60,43 @@ public class LinkedHashSetJmhBenchmark {
     @OutputTimeUnit(TimeUnit.NANOSECONDS)
     @BenchmarkMode(Mode.AverageTime)
     public void measureClone() {
-        LinkedHashSet<Integer> set = (LinkedHashSet<Integer>) CONSTANT_SET.clone();
+        LinkedHashSet<BenchmarkDataSet.Key> set = (LinkedHashSet<BenchmarkDataSet.Key>) CONSTANT_SET.clone();
     }
 
     @Benchmark
     @OutputTimeUnit(TimeUnit.NANOSECONDS)
     @BenchmarkMode(Mode.AverageTime)
-    public void measureRemove() {
-        LinkedHashSet<Integer> set = (LinkedHashSet<Integer>) CONSTANT_SET.clone();
-        for (int v : VALUE_SET) {
+    public void measureCloneAndRemoveAll() {
+        LinkedHashSet<BenchmarkDataSet.Key> set = (LinkedHashSet<BenchmarkDataSet.Key>) CONSTANT_SET.clone();
+        for (BenchmarkDataSet.Key v : DATA_SET.valuesInSet) {
             set.remove(v);
         }
     }
-
     @Benchmark
     @OutputTimeUnit(TimeUnit.NANOSECONDS)
     @BenchmarkMode(Mode.AverageTime)
-    public void measureSuccessfulGet() {
-        LinkedHashSet<Integer> set = CONSTANT_SET;
-        for (int v : VALUE_SET) {
-            set.contains(v);
-        }
+    public void measureRemoveAdd() {
+        LinkedHashSet<BenchmarkDataSet.Key> set = CONSTANT_SET;
+        index= DATA_SET.valuesInSet.length-index>1?index+1:0;
+        set.remove(DATA_SET.valuesInSet[index]);
+        set.add(DATA_SET.valuesInSet[index]);
     }
 
     @Benchmark
     @OutputTimeUnit(TimeUnit.NANOSECONDS)
     @BenchmarkMode(Mode.AverageTime)
-    public void measureUnsuccessfulGet() {
-        LinkedHashSet<Integer> set = CONSTANT_SET;
-        for (int v : NOT_IN_VALUE_SET) {
-            set.contains(v);
-        }
+    public boolean measureSuccessfulGet() {
+        LinkedHashSet<BenchmarkDataSet.Key> set = CONSTANT_SET;
+        index= DATA_SET.valuesInSet.length-index>1?index+1:0;
+        return set.contains(DATA_SET.valuesInSet[index]);
+    }
+
+    @Benchmark
+    @OutputTimeUnit(TimeUnit.NANOSECONDS)
+    @BenchmarkMode(Mode.AverageTime)
+    public boolean measureUnsuccessfulGet() {
+        LinkedHashSet<BenchmarkDataSet.Key> set = CONSTANT_SET;
+        index= DATA_SET.valuesNotInSet.length-index>1?index+1:0;
+        return set.contains(DATA_SET.valuesNotInSet[index]);
     }
 }

@@ -4,41 +4,152 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.DoubleSummaryStatistics;
-import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public abstract class AbstractSetTest {
 
-protected abstract <T> Set<T> create(int initialCapacity, float maxLoadFactor, float growFactor, float minLoadFactor) ;
+    public static final Key FIVE = new Key(5);
+    public static final Key THREE = new Key(3);
+    public static final Key ZERO = new Key(0);
+    public static final Key SIX = new Key(6);
+    public static final Key SEVEN = new Key(7);
+    public static final Key EIGHT = new Key(8);
+
+    protected abstract <T> Set<T> create(int expectedMaxSize, float maxLoadFactor);
+
+    @Test
+    public void testAdd1ElementWithZeroInitialCapacity() {
+        Set<Key> set = create(0, 0.75f);
+
+        set.add(FIVE);
+
+        assertTrue(set.contains(FIVE));
+        assertFalse(set.contains(THREE));
+    }
+
+    @Test
+    public void testAdd1ElementWith1InitialCapacityAnd100PercentLoadFactor() {
+        Set<Key> set = create(1, 1f);
+
+        set.add(FIVE);
+
+        assertTrue(set.contains(FIVE));
+        assertFalse(set.contains(THREE));
+    }
+
     @Test
     public void testAdd1Element() {
-        Set<Integer> set = create(16,0.75f,2.0f,0.125f);
+        Set<Key> set = create(16, 0.75f);
 
-        set.add(5);
+        set.add(FIVE);
 
-        assertTrue(set.contains(5));
-        assertFalse(set.contains(0));
+        assertTrue(set.contains(FIVE));
+        assertFalse(set.contains(ZERO));
+    }
+
+    @Test
+    public void testAddAndRemoveElementsOnGrowableTableOfInitialCapacity0() {
+        doTestAddAndRemoveElementsOnGrowableTable(create(0, 0.625f));
+    }
+
+    @Test
+    public void testAddAndRemoveElementsOnGrowableTableOfInitialCapacity20() {
+        doTestAddAndRemoveElementsOnGrowableTable(create(20, 0.625f));
+    }
+
+    @Test
+    public void testAddAndRemoveElementsOnGrowableTableOfInitialCapacity0And100PercentLoadFactor() {
+        doTestAddAndRemoveElementsOnGrowableTable(create(0, 1f));
+    }
+
+
+    public void doTestAddAndRemoveElementsOnGrowableTable(Set<Key> set) {
+        set.add(FIVE);
+        set.add(SIX);
+        set.add(SEVEN);
+
+        assertTrue(set.contains(FIVE));
+        assertTrue(set.contains(SIX));
+        assertTrue(set.contains(SEVEN));
+        assertFalse(set.contains(ZERO));
+
+        set.remove(FIVE);
+        set.remove(SIX);
+        set.remove(SEVEN);
+
+        assertFalse(set.contains(FIVE));
+        assertFalse(set.contains(SIX));
+        assertFalse(set.contains(SEVEN));
+        assertFalse(set.contains(ZERO));
+    }
+
+
+    @Test
+    public void testRemoveElementsWithIterator() {
+        Set<Key> set = create(21, 1f);
+
+        set.add(FIVE);
+        set.add(SIX);
+        set.add(SEVEN);
+        set.add(EIGHT);
+
+        assertTrue(set.contains(FIVE));
+        assertTrue(set.contains(SIX));
+        assertTrue(set.contains(SEVEN));
+        assertTrue(set.contains(EIGHT));
+
+        for (Iterator<Key> it = set.iterator(); it.hasNext(); ) {
+            Key k = it.next();
+            if (k == SIX) {
+                it.remove();
+            }
+        }
+        assertTrue(set.contains(FIVE));
+        assertFalse(set.contains(SIX));
+        assertTrue(set.contains(SEVEN));
+        assertTrue(set.contains(EIGHT));
+
+        for (Iterator<Key> it = set.iterator(); it.hasNext(); ) {
+            Key k = it.next();
+            if (k == EIGHT) {
+                it.remove();
+            }
+        }
+        assertTrue(set.contains(FIVE));
+        assertFalse(set.contains(SIX));
+        assertTrue(set.contains(SEVEN));
+        assertFalse(set.contains(EIGHT));
+
+        for (Iterator<Key> it = set.iterator(); it.hasNext(); ) {
+            Key k = it.next();
+            it.remove();
+        }
+        assertFalse(set.contains(FIVE));
+        assertFalse(set.contains(SIX));
+        assertFalse(set.contains(SEVEN));
+        assertFalse(set.contains(EIGHT));
     }
 
     @Test
     public void testAddAndRemoveElementsWithCollisions() {
-        Set<Integer> set = create(32,1f,1f,0f);
+        Set<Key> set = create(32, 1f);
 
-        List<Integer> list = IntStream.range(0, 26).boxed().collect(Collectors.toList());
+        List<Key> list = IntStream.range(0, 26).mapToObj(Key::new).collect(Collectors.toList());
 
 
         for (int i = 0; i < list.size(); i++) {
+            System.out.println("adding " + list.get(i));
             set.add(list.get(i));
+            if (!set.containsAll(list.subList(0, i + 1))) {
+                System.out.println(set);
+            }
             assertTrue(set.containsAll(list.subList(0, i + 1)));
             assertFalse(containsAny(set, list.subList(i + 1, list.size())));
         }
@@ -46,29 +157,34 @@ protected abstract <T> Set<T> create(int initialCapacity, float maxLoadFactor, f
         for (int i = 0; i < list.size(); i++) {
             System.out.println("removing " + list.get(i));
             boolean remove = set.remove(list.get(i));
-            assertTrue(remove, "removing " + list.get(i));
+            assertTrue(remove, "successfully removed " + list.get(i));
 
-            assertTrue(set.containsAll(list.subList(i + 1, list.size())), "failed to remove " + list.get(i));
+            //   assertTrue(set.contains(list.get(22)));
+
+            assertTrue(set.containsAll(list.subList(i + 1, list.size())), "failed to remove " + list.get(i)
+                    + "\nlist:" + list.subList(i + 1, list.size())
+                    + "\nset :" + set
+            );
             assertFalse(containsAny(set, list.subList(0, i)));
         }
     }
 
     @Test
     public void testAddAndRemoveElementsWithCollisionsAndGrowAndShrink() {
-        Set<Integer> set = create(5,0.75f,1.5f,0.125f);
+        Set<Key> set = create(5, 0.75f);
 
-        List<Integer> list = IntStream.range(0, 26).boxed().collect(Collectors.toList());
+        List<Key> list = IntStream.range(0, 26).mapToObj(Key::new).collect(Collectors.toList());
 
 
         for (int i = 0; i < list.size(); i++) {
-            System.out.println("adding " + list.get(i));
+            //System.out.println("adding " + list.get(i));
             set.add(list.get(i));
             assertTrue(set.containsAll(list.subList(0, i + 1)));
             assertFalse(containsAny(set, list.subList(i + 1, list.size())));
         }
 
-       for (int i = 0; i < list.size(); i++) {
-            System.out.println("removing " + list.get(i));
+        for (int i = 0; i < list.size(); i++) {
+            //System.out.println("removing " + list.get(i));
             boolean remove = set.remove(list.get(i));
             assertTrue(remove, "removing " + list.get(i));
 
@@ -79,9 +195,9 @@ protected abstract <T> Set<T> create(int initialCapacity, float maxLoadFactor, f
 
     @Test
     public void testAddAndRemoveElementsWithoutCollisions() {
-       Set<Integer> set = create(16,1f,1f,0f);
+        Set<Key> set = create(16, 1f);
 
-        List<Integer> list = Arrays.asList(5, 6, 7, 8);
+        List<Key> list = Arrays.asList(FIVE, SIX, SEVEN, EIGHT);
 
         for (int i = 0; i < list.size(); i++) {
             set.add(list.get(i));
@@ -106,70 +222,6 @@ protected abstract <T> Set<T> create(int initialCapacity, float maxLoadFactor, f
         return false;
     }
 
-    ///-------------
-
-    public void doTestBenchmark(Supplier<Set<Integer>> factory) {
-        List<Integer> integers = new Random(0).ints(100_000,0,200_000)
-                .boxed().collect(Collectors.toList());
-        //warmup
-        for (int j = 0; j < 1024; j++) {
-            Set<Integer> set = factory.get();
-            for (Integer i:integers) {
-                set.add(i);
-            }
-            if (j==0){System.out.println("set size="+set.size());
-                if (set instanceof RobinHoodHashSetTwoArrays) {
-                    ((RobinHoodHashSetTwoArrays)set).dumpStats();
-                }
-            }
-        }
-        DoubleSummaryStatistics stats = new DoubleSummaryStatistics();
-        for (int j = 0; j < 32; j++) {
-            Set<Integer> set = factory.get();
-            long start = System.nanoTime();
-            for (Integer i :integers) {
-                set.add(i);
-            }
-            long end = System.nanoTime();
-            stats.accept((end - start) / 1_000d);
-        }
-        System.out.println(factory.get().getClass());
-        System.out.println(stats);
+    public static record Key(int id) {
     }
-    public void doTestBenchmarkShrink(Supplier<Set<Integer>> factory) throws Exception {
-        Random rng = new Random(0);
-        List<Integer> initialIntegers = rng.ints(100_000,0,100_000)
-                .boxed().collect(Collectors.toList());
-        List<Integer> removeIntegers = rng.ints(100_000,0,100_000)
-                .boxed().collect(Collectors.toList());
-        Set<Integer> initialSet = factory.get();
-        initialSet.addAll(initialIntegers);
-        //warmup
-        for (int j = 0; j < 1024; j++) {
-
-            Set<Integer> set= (Set<Integer>) initialSet.getClass().getDeclaredMethod("clone").invoke(initialSet);;
-        set.removeAll(removeIntegers);
-            if (j==0){System.out.println("set size="+set.size());
-                HashSet<Integer> expected=new HashSet<>();
-                expected.addAll(initialIntegers);
-                expected.removeAll(removeIntegers);
-                assertEquals(expected,set);
-            }
-        }
-        DoubleSummaryStatistics stats = new DoubleSummaryStatistics();
-        for (int j = 0; j < 32; j++) {
-            Set<Integer> set= (Set<Integer>) initialSet.getClass().getDeclaredMethod("clone").invoke(initialSet);;
-            long start = System.nanoTime();
-            set.removeAll(removeIntegers);
-            long end = System.nanoTime();
-            stats.accept((end - start) / 1_000d);
-        }
-        System.out.println(factory.get().getClass());
-        System.out.println(stats);
-    }
-  
-
-
-
-
 }

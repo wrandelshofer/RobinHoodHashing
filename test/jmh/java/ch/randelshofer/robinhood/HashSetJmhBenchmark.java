@@ -6,105 +6,103 @@ import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 
 import java.util.HashSet;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 /**
  * <pre>
  * # JMH version: 1.28
- * # VM version: JDK 16, OpenJDK 64-Bit Server VM, 16+36 (Azul Zulu)
+ * # VM version: JDK 17, OpenJDK 64-Bit Server VM, 17+35-2724
  * # Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz
  *
- * Benchmark        Mode  Cnt         Score        Error  Units
- * Add              avgt   25  16_39976.379 ±  29641.235  ns/op
- * AddAndGrow       avgt   25  55_09892.521 ± 168496.115  ns/op
- * Clone            avgt   25  26_01282.848 ±  30392.642  ns/op
- * Remove           avgt   25  62_08743.152 ± 336646.110  ns/op
- * SuccessfulGet    avgt   25   9_55005.213 ±  24749.852  ns/op
- * UnsuccessfulGet  avgt   25   6_19470.596 ±   9354.213  ns/op
+ * HashSetJmhBenchmark.measureAddAll             avgt   25  18_77028.374 ±  58769.611  ns/op
+ * HashSetJmhBenchmark.measureAddAllAndGrow      avgt   25  56_69370.938 ±  94137.935  ns/op
+ * HashSetJmhBenchmark.measureClone              avgt   25  26_71116.575 ±  19545.953  ns/op
+ * HashSetJmhBenchmark.measureCloneAndRemoveAll  avgt   25  49_40933.351 ± 125261.650  ns/op
+ * HashSetJmhBenchmark.measureRemoveAdd          avgt   25        39.022 ±      1.357  ns/op
+ * HashSetJmhBenchmark.measureSuccessfulGet      avgt   25        12.392 ±      0.287  ns/op
+ * HashSetJmhBenchmark.measureUnsuccessfulGet    avgt   25         7.224 ±      0.025  ns/op
  * </pre>
  */
-public class HashSetJmhBenchmark {
-
-    private static final int[] VALUE_SET = new int[100_000];
-    private static final int[] NOT_IN_VALUE_SET = new int[100_000];
-
-    private static final HashSet<Integer> CONSTANT_SET;
-
-    public static final int CAPACITY = 262_144;
-
+public class HashSetJmhBenchmark  {
+    private static int index;
+private static BenchmarkDataSet DATA_SET =new BenchmarkDataSet(100_000, 0, 500_000);
+    private static final HashSet<BenchmarkDataSet.Key> CONSTANT_SET = new HashSet<>(DATA_SET.constantIdentitySet);
     static {
-        Random rng = new Random(0);
-        HashSet<Integer> set = new HashSet<>(CAPACITY);
-        for (int i = 0; i < VALUE_SET.length; ) {
-            int v = rng.nextInt(500_000);
-            if (set.add(v)) {
-                VALUE_SET[i++] = v;
-            }
+        System.out.println("HashSet size:"+CONSTANT_SET.size());
+    }
+    @Benchmark
+    @OutputTimeUnit(TimeUnit.NANOSECONDS)
+    @BenchmarkMode(Mode.AverageTime)
+    public void measureAddAll() {
+        HashSet<BenchmarkDataSet.Key> set = new HashSet<>(
+                DATA_SET.constantIdentitySet.size()*2,
+                0.75f);
+        boolean added=true;
+        for (BenchmarkDataSet.Key v : DATA_SET.valuesInSet) {
+            added&=set.add(v);
         }
-        for (int i = 0; i < VALUE_SET.length; ) {
-            int v = rng.nextInt(500_000);
-            if (!set.contains(v)) {
-                NOT_IN_VALUE_SET[i++] = v;
-            }
+        if (!added||set.size()!=DATA_SET.valuesInSet.length) {
+            throw new AssertionError();
         }
-        CONSTANT_SET = set;
     }
 
     @Benchmark
     @OutputTimeUnit(TimeUnit.NANOSECONDS)
     @BenchmarkMode(Mode.AverageTime)
-    public void measureAdd() {
-        HashSet<Integer> set = new HashSet<>(CAPACITY);
-        for (Integer v : VALUE_SET) {
-            set.add(v);
+    public void measureAddAllAndGrow() {
+        HashSet<BenchmarkDataSet.Key> set = new HashSet<>(
+                16,
+                0.75f);
+        boolean added=true;
+        for (BenchmarkDataSet.Key v : DATA_SET.valuesInSet) {
+            added&=set.add(v);
+        }
+        if (!added||set.size()!=DATA_SET.valuesInSet.length) {
+            throw new AssertionError();
         }
     }
 
-    //@Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
-    public void measureAddAndGrow() {
-        HashSet<Integer> set = new HashSet<>();
-        for (int v : VALUE_SET) {
-            set.add(v);
-        }
-    }
-
-    //@Benchmark
+    @Benchmark
     @OutputTimeUnit(TimeUnit.NANOSECONDS)
     @BenchmarkMode(Mode.AverageTime)
     public void measureClone() {
-        HashSet<Integer> set = (HashSet<Integer>) CONSTANT_SET.clone();
+        HashSet<BenchmarkDataSet.Key> set = (HashSet<BenchmarkDataSet.Key>) CONSTANT_SET.clone();
     }
 
-    //@Benchmark
+    @Benchmark
     @OutputTimeUnit(TimeUnit.NANOSECONDS)
     @BenchmarkMode(Mode.AverageTime)
-    public void measureRemove() {
-        HashSet<Integer> set = (HashSet<Integer>) CONSTANT_SET.clone();
-        for (int v : VALUE_SET) {
+    public void measureCloneAndRemoveAll() {
+        HashSet<BenchmarkDataSet.Key> set = (HashSet<BenchmarkDataSet.Key>) CONSTANT_SET.clone();
+        for (BenchmarkDataSet.Key v : DATA_SET.valuesInSet) {
             set.remove(v);
         }
     }
+   @Benchmark
+    @OutputTimeUnit(TimeUnit.NANOSECONDS)
+    @BenchmarkMode(Mode.AverageTime)
+    public void measureRemoveAdd() {
+        HashSet<BenchmarkDataSet.Key> set = CONSTANT_SET;
+        index= DATA_SET.valuesInSet.length-index>1?index+1:0;
+        set.remove(DATA_SET.valuesInSet[index]);
+        set.add(DATA_SET.valuesInSet[index]);
+    }
 
-    //@Benchmark
+    @Benchmark
     @OutputTimeUnit(TimeUnit.NANOSECONDS)
     @BenchmarkMode(Mode.AverageTime)
     public void measureSuccessfulGet() {
-        HashSet<Integer> set = CONSTANT_SET;
-        for (int v : VALUE_SET) {
-            set.contains(v);
-        }
+        HashSet<BenchmarkDataSet.Key> set = CONSTANT_SET;
+        index= DATA_SET.valuesInSet.length-index>1?index+1:0;
+        set.contains(DATA_SET.valuesInSet[index]);
     }
 
-    //@Benchmark
+    @Benchmark
     @OutputTimeUnit(TimeUnit.NANOSECONDS)
     @BenchmarkMode(Mode.AverageTime)
     public void measureUnsuccessfulGet() {
-        HashSet<Integer> set = CONSTANT_SET;
-        for (int v : NOT_IN_VALUE_SET) {
-            set.contains(v);
-        }
+        HashSet<BenchmarkDataSet.Key> set = CONSTANT_SET;
+        index= DATA_SET.valuesNotInSet.length-index>1?index+1:0;
+        set.contains(DATA_SET.valuesNotInSet[index]);
     }
 }

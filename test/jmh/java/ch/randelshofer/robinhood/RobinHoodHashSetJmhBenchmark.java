@@ -5,125 +5,136 @@ import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 /**
- * With capacity set to 262_144:
  * <pre>
  * # JMH version: 1.28
- * # VM version: JDK 16, OpenJDK 64-Bit Server VM, 16+36 (Azul Zulu)
- * # Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz
+ * # VM version: JDK 17, OpenJDK 64-Bit Server VM, 17+35-2724
+ * # Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz, L3 Cache 12 MB, Memory 32 GB 2667 MHz DDR4
+ * # -Xmx8g
  *
- * Benchmark        Mode  Cnt         Score       Error  Units
- * Add              avgt   25  16_86851.334 ±  88541.440  ns/op
- * AddAndGrow       avgt   25  56_36719.890 ±  64252.818  ns/op
- * Clone            avgt   25    _75306.313 ±    623.763  ns/op
- * Remove           avgt   25  58_25579.565 ± 172365.295  ns/op
- * SuccessfulGet    avgt   25   9_41635.359 ±  16633.349  ns/op
- * UnsuccessfulGet  avgt   25  14_80041.841 ±  47867.423  ns/op
- * </pre>
- * With capacity set to 134_000:
- * <pre>
- * # JMH version: 1.28
- * # VM version: JDK 16, OpenJDK 64-Bit Server VM, 16+36 (Azul Zulu)
- * # Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz
+ * Benchmark                                             Mode  Cnt        Score        Error  Units
+ * RobinHoodHashSetJmhBenchmark.measureAddAll            avgt   25  14_47494.150 ± 128516.986  ns/op
+ * RobinHoodHashSetJmhBenchmark.measureAddAllAndGrow     avgt   25  61_89208.353 ±  68023.599  ns/op
+ * RobinHoodHashSetJmhBenchmark.measureClone             avgt   25     85105.879 ±    145.628  ns/op
+ * RobinHoodHashSetJmhBenchmark.measureCloneAndRemoveAll avgt   25  15_54209.786 ± 30035.416  ns/op
+ * RobinHoodHashSetJmhBenchmark.measureRemoveAdd         avgt   25        35.566 ±     1.039  ns/op
+ * RobinHoodHashSetJmhBenchmark.measureSuccessfulGet     avgt   25         9.225 ±      0.791  ns/op
+ * RobinHoodHashSetJmhBenchmark.measureUnsuccessfulGet   avgt   25        14.319 ±      1.003  ns/op
  *
- * Benchmark        Mode  Cnt         Score       Error  Units
- * Add              avgt   25  27_71320.175 ± 32622.963  ns/op
- * AddAndGrow       avgt   25  64_36769.576 ± 77519.754  ns/op
- * Clone            avgt   25    _37855.608 ±   206.238  ns/op
- * Remove           avgt   25  57_99296.564 ± 41112.763  ns/op
- * SuccessfulGet    avgt   25  34_33375.830 ± 45335.358  ns/op
- * UnsuccessfulGet  avgt   25  38_44692.219 ± 22035.735  ns/op
+ * The hashtable fits into the L3 cache.
+ *
+ * RobinHoodHashSet capacity:400000
+ * RobinHoodHashSet fillRatio:0.25
+ * RobinHoodHashSet loadFactor:0.5
+ * RobinHoodHashSet costStats:IntSummaryStatistics{count=100000, sum=8707, min=0, average=0.087070, max=3}
  * </pre>
  */
 public class RobinHoodHashSetJmhBenchmark {
+    private static int index;
+    private static BenchmarkDataSet DATA_SET = new BenchmarkDataSet(100_000, 0, 500_000);
 
-    private static final Integer[] VALUE_SET = new Integer[100_000];
-    private static final Integer[] NOT_IN_VALUE_SET = new Integer[100_000];
 
-    private static final RobinHoodHashSet<Integer> CONSTANT_SET;
-
-    public static final int CAPACITY = 262_144;
+    private static final RobinHoodHashSet<BenchmarkDataSet.Key> CONSTANT_SET = new RobinHoodHashSet<>(DATA_SET.constantIdentitySet);
 
     static {
-        Random rng = new Random(0);
-        RobinHoodHashSet<Integer> set = new RobinHoodHashSet<>(CAPACITY);
-        for (int i = 0; i < VALUE_SET.length; ) {
-            int v = rng.nextInt(500_000);
-            if (set.add(v)) {
-                VALUE_SET[i++] = v;
-            }
-        }
-        CONSTANT_SET = set;
-        for (int i = 0; i < VALUE_SET.length; ) {
-            int v = rng.nextInt(500_000);
-            if (!set.contains(v)) {
-                NOT_IN_VALUE_SET[i++] = v;
-            }
-        }
-        /*
-        System.out.println("CONSTANT_SET.size     : "+set.size());
-        System.out.println("CONSTANT_SET.capacity : "+set.getCapacity());
-        System.out.println("CONSTANT_SET.costStats; "+set.getCostStatistics());
-         */
+        System.out.println("RobinHoodHashSet size:" + CONSTANT_SET.size());
+        System.out.println("RobinHoodHashSet capacity:" + CONSTANT_SET.getCapacity());
+        System.out.println("RobinHoodHashSet fillRatio:" + CONSTANT_SET.getFillRatio());
+        System.out.println("RobinHoodHashSet loadFactor:" + CONSTANT_SET.getLoadFactor());
+        System.out.println("RobinHoodHashSet costStats:" + CONSTANT_SET.getCostStatistics());
     }
 
     @Benchmark
     @OutputTimeUnit(TimeUnit.NANOSECONDS)
     @BenchmarkMode(Mode.AverageTime)
-    public void measureAdd() {
-        RobinHoodHashSet<Integer> set = new RobinHoodHashSet<>(CAPACITY);
-        for (Integer v : VALUE_SET) {
-            set.add(v);
+    public void measureNewInstance() {
+        RobinHoodHashSet<BenchmarkDataSet.Key> set = new RobinHoodHashSet<>(
+                DATA_SET.constantIdentitySet.size()*4,
+                0.5f);
+    }
+    /*
+    @Benchmark
+    @OutputTimeUnit(TimeUnit.NANOSECONDS)
+    @BenchmarkMode(Mode.AverageTime)
+    public void measureAddAll() {
+        RobinHoodHashSet<BenchmarkDataSet.Key> set = new RobinHoodHashSet<>(
+                DATA_SET.constantIdentitySet.size()*4,
+                0.5f);
+        boolean added=true;
+        for (BenchmarkDataSet.Key v : DATA_SET.valuesInSet) {
+            added&=set.add(v);
+        }
+        if (!added||set.size()!=DATA_SET.valuesInSet.length) {
+            throw new AssertionError();
+        }
+    }
+/*
+    @Benchmark
+    @OutputTimeUnit(TimeUnit.NANOSECONDS)
+    @BenchmarkMode(Mode.AverageTime)
+    public void measureAddAllAndGrow() {
+        RobinHoodHashSet<BenchmarkDataSet.Key> set = new RobinHoodHashSet<>(
+                0,
+                0.5f);
+        boolean added=true;
+        for (BenchmarkDataSet.Key v : DATA_SET.valuesInSet) {
+            added&=set.add(v);
+        }
+        if (!added||set.size()!=DATA_SET.valuesInSet.length) {
+            throw new AssertionError();
         }
     }
 
     @Benchmark
     @OutputTimeUnit(TimeUnit.NANOSECONDS)
     @BenchmarkMode(Mode.AverageTime)
-    public void measureAddAndGrow() {
-        RobinHoodHashSet<Integer> set = new RobinHoodHashSet<>();
-        for (Integer v : VALUE_SET) {
-            set.add(v);
+    public Object measureClone() {
+        return CONSTANT_SET.clone();
+    }
+
+    @Benchmark
+    @OutputTimeUnit(TimeUnit.NANOSECONDS)
+    @BenchmarkMode(Mode.AverageTime)
+    public void measureCloneAndRemoveAll() {
+        RobinHoodHashSet<BenchmarkDataSet.Key> set = CONSTANT_SET.clone();
+        boolean removed=true;
+        for (BenchmarkDataSet.Key v : DATA_SET.valuesInSet) {
+            removed&=set.remove(v);
+        }
+        if (!removed||set.size()!=0) {
+            throw new AssertionError();
         }
     }
 
     @Benchmark
     @OutputTimeUnit(TimeUnit.NANOSECONDS)
     @BenchmarkMode(Mode.AverageTime)
-    public void measureClone() {
-        RobinHoodHashSet<Integer> set = CONSTANT_SET.clone();
-    }
-
-    @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
-    public void measureRemove() {
-        RobinHoodHashSet<Integer> set = CONSTANT_SET.clone();
-        for (Integer v : VALUE_SET) {
-            set.remove(v);
-        }
+    public void measureRemoveAdd() {
+        RobinHoodHashSet<BenchmarkDataSet.Key> set = CONSTANT_SET;
+        index = DATA_SET.valuesInSet.length - index > 1 ? index + 1 : 0;
+        set.remove(DATA_SET.valuesInSet[index]);
+        set.add(DATA_SET.valuesInSet[index]);
     }
 
     @Benchmark
     @OutputTimeUnit(TimeUnit.NANOSECONDS)
     @BenchmarkMode(Mode.AverageTime)
     public void measureSuccessfulGet() {
-        RobinHoodHashSet<Integer> set = CONSTANT_SET;
-        for (Integer v : VALUE_SET) {
-            set.contains(v);
-        }
+        RobinHoodHashSet<BenchmarkDataSet.Key> set = CONSTANT_SET;
+        index = DATA_SET.valuesInSet.length - index > 1 ? index + 1 : 0;
+        set.contains(DATA_SET.valuesInSet[index]);
     }
 
     @Benchmark
     @OutputTimeUnit(TimeUnit.NANOSECONDS)
     @BenchmarkMode(Mode.AverageTime)
     public void measureUnsuccessfulGet() {
-        RobinHoodHashSet<Integer> set = CONSTANT_SET;
-        for (Integer v : NOT_IN_VALUE_SET) {
-            set.contains(v);
-        }
+        RobinHoodHashSet<BenchmarkDataSet.Key> set = CONSTANT_SET;
+        index = DATA_SET.valuesNotInSet.length - index > 1 ? index + 1 : 0;
+        set.contains(DATA_SET.valuesNotInSet[index]);
     }
+*/
+
 }
