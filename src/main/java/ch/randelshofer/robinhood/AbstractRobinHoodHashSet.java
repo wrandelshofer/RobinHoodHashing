@@ -3,7 +3,6 @@ package ch.randelshofer.robinhood;
 
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
-import java.util.IntSummaryStatistics;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -16,7 +15,7 @@ import static java.lang.Math.max;
 /**
  * Robin Hood Hash Set.
  */
-abstract class AbstractRobinHoodHashSet<E> extends AbstractRobinHoodHashing <E> implements Cloneable, Iterable<E> {
+abstract class AbstractRobinHoodHashSet<E> extends AbstractRobinHoodHashing<E> implements Cloneable, Iterable<E> {
     public AbstractRobinHoodHashSet() {
         super();
     }
@@ -57,9 +56,9 @@ abstract class AbstractRobinHoodHashSet<E> extends AbstractRobinHoodHashing <E> 
 
     @Override
     protected AbstractRobinHoodHashSet<E> clone() {
-            @SuppressWarnings("unchecked")
-            var that = (AbstractRobinHoodHashSet<E>) super.clone();
-            return that;
+        @SuppressWarnings("unchecked")
+        var that = (AbstractRobinHoodHashSet<E>) super.clone();
+        return that;
     }
 
 
@@ -76,7 +75,6 @@ abstract class AbstractRobinHoodHashSet<E> extends AbstractRobinHoodHashing <E> 
         }
         return true;
     }
-
 
 
     public boolean equals(Object o) {
@@ -99,8 +97,6 @@ abstract class AbstractRobinHoodHashSet<E> extends AbstractRobinHoodHashing <E> 
     }
 
 
-
-
     /**
      * Gets {@code k} for the bucket {@code i}
      * in the table of length {@code length}.
@@ -115,8 +111,6 @@ abstract class AbstractRobinHoodHashSet<E> extends AbstractRobinHoodHashing <E> 
     }
 
 
-
-
     public int hashCode() {
         var h = 0;
         for (var e : this) {
@@ -128,7 +122,7 @@ abstract class AbstractRobinHoodHashSet<E> extends AbstractRobinHoodHashing <E> 
     }
 
     @SuppressWarnings("unchecked")
-    protected  void resize(int newCapacity) {
+    protected void resize(int newCapacity) {
         Object[] objects = toArray();
         computeThreshold(newCapacity);
         createTable(newCapacity);
@@ -193,7 +187,7 @@ abstract class AbstractRobinHoodHashSet<E> extends AbstractRobinHoodHashing <E> 
     /**
      * Removes the specified object if it is contained in the set.
      *
-     * @param o         an object
+     * @param o an object
      * @return whether the object was in the set
      */
     protected boolean remove(Object o) {
@@ -212,20 +206,14 @@ abstract class AbstractRobinHoodHashSet<E> extends AbstractRobinHoodHashing <E> 
     }
 
 
-
-
-
-
     protected abstract void shiftForRemoval(int index);
 
 
-
-
     public void sizeToFit(float fillRatio) {
-        if (size==0) {
+        if (size == 0) {
             resize(0);
         } else {
-                resize(max((int)(size/fillRatio),size));
+            resize(max((int) (size / fillRatio), size));
         }
     }
 

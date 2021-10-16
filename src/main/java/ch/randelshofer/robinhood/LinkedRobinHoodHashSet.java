@@ -22,6 +22,7 @@ import static ch.randelshofer.robinhood.RangeAlgorithms.fastRange;
 public class LinkedRobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet<E> {
     private Entry<E> first, last;
     private Entry<E>[] table;
+
     public LinkedRobinHoodHashSet() {
     }
 
@@ -62,7 +63,7 @@ public class LinkedRobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet<E
         table = (Entry<E>[]) new Entry[capacity];
     }
 
-    @SuppressWarnings("unchecked")
+
     @Override
     protected E getKeyFromTable(int index) {
         Entry<E> entry = table[index];
@@ -74,7 +75,6 @@ public class LinkedRobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet<E
         return fastRange(goldenRatioAvalanche(e.hashCode()), length);
     }
 
-    @SuppressWarnings("unchecked")
     protected boolean isEqual(Object a, Object b) {
         return a.equals(b);
     }
@@ -120,7 +120,6 @@ public class LinkedRobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet<E
         return new SetIterator();
     }
 
-    @SuppressWarnings("unchecked")
     protected void resize(int newCapacity) {
         computeThreshold(newCapacity);
         createTable(newCapacity);

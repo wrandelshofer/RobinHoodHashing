@@ -304,8 +304,6 @@ public abstract class AbstractRobinHoodHashing<E> implements Cloneable{
 
     protected void grow() {
         int desiredCapacity = Math.max(0,(int)((size+1)*2f/loadFactor));
-        // The desired capacity must leave room for size+1 elements (because
-        // we want to grow) plus 1 empty bucket (because this is an invariant).
         if (desiredCapacity < size + 1) {
             throw new IllegalStateException("Cannot grow table.");
         }
