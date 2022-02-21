@@ -2,8 +2,11 @@ package ch.randelshofer.robinhood;
 
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Warmup;
 
 import java.util.HashSet;
 import java.util.concurrent.TimeUnit;
@@ -21,88 +24,89 @@ import java.util.concurrent.TimeUnit;
  * HashSetJmhBenchmark.measureRemoveAdd          avgt   25        39.022 ±      1.357  ns/op
  * HashSetJmhBenchmark.measureSuccessfulGet      avgt   25        12.392 ±      0.287  ns/op
  * HashSetJmhBenchmark.measureUnsuccessfulGet    avgt   25         7.224 ±      0.025  ns/op
+ * HashSetJmhBenchmark.measureEqualsOfEqualSet   avgt    4  23_85546.743 ± 279149.625  ns/op
  * </pre>
  */
+@Measurement(iterations = 2)
+@Warmup(iterations = 2)
+@Fork(value = 2)
+@OutputTimeUnit(TimeUnit.NANOSECONDS)
+@BenchmarkMode(Mode.AverageTime)
 public class HashSetJmhBenchmark  {
     private static int index;
-private static BenchmarkDataSet DATA_SET =new BenchmarkDataSet(100_000, 0, 500_000);
+    private static BenchmarkDataSet DATA_SET = new BenchmarkDataSet(100_000, 0, 500_000, -1);
     private static final HashSet<BenchmarkDataSet.Key> CONSTANT_SET = new HashSet<>(DATA_SET.constantIdentitySet);
+    private static final HashSet<BenchmarkDataSet.Key> IDENTICAL_SET = new HashSet<>(DATA_SET.constantIdentitySet);
     static {
         System.out.println("HashSet size:"+CONSTANT_SET.size());
     }
+
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
-    public void measureAddAll() {
+    public void measureAddAllOneByOne() {
         HashSet<BenchmarkDataSet.Key> set = new HashSet<>(
-                DATA_SET.constantIdentitySet.size()*2,
+                DATA_SET.constantIdentitySet.size() * 2,
                 0.75f);
-        boolean added=true;
+        boolean added = true;
         for (BenchmarkDataSet.Key v : DATA_SET.valuesInSet) {
-            added&=set.add(v);
+            added &= set.add(v);
         }
-        if (!added||set.size()!=DATA_SET.valuesInSet.length) {
+        if (!added || set.size() != DATA_SET.valuesInSet.length) {
             throw new AssertionError();
         }
     }
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
-    public void measureAddAllAndGrow() {
+    public void measureAddAllOneByOneAndGrow() {
         HashSet<BenchmarkDataSet.Key> set = new HashSet<>(
                 16,
                 0.75f);
-        boolean added=true;
+        boolean added = true;
         for (BenchmarkDataSet.Key v : DATA_SET.valuesInSet) {
-            added&=set.add(v);
+            added &= set.add(v);
         }
-        if (!added||set.size()!=DATA_SET.valuesInSet.length) {
+        if (!added || set.size() != DATA_SET.valuesInSet.length) {
             throw new AssertionError();
         }
     }
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void measureClone() {
         HashSet<BenchmarkDataSet.Key> set = (HashSet<BenchmarkDataSet.Key>) CONSTANT_SET.clone();
     }
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
-    public void measureCloneAndRemoveAll() {
+    public void measureCloneAndRemoveAllOneByOne() {
         HashSet<BenchmarkDataSet.Key> set = (HashSet<BenchmarkDataSet.Key>) CONSTANT_SET.clone();
         for (BenchmarkDataSet.Key v : DATA_SET.valuesInSet) {
             set.remove(v);
         }
     }
-   @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
+
+    @Benchmark
     public void measureRemoveAdd() {
         HashSet<BenchmarkDataSet.Key> set = CONSTANT_SET;
-        index= DATA_SET.valuesInSet.length-index>1?index+1:0;
+        index = DATA_SET.valuesInSet.length - index > 1 ? index + 1 : 0;
         set.remove(DATA_SET.valuesInSet[index]);
         set.add(DATA_SET.valuesInSet[index]);
     }
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void measureSuccessfulGet() {
         HashSet<BenchmarkDataSet.Key> set = CONSTANT_SET;
-        index= DATA_SET.valuesInSet.length-index>1?index+1:0;
+        index = DATA_SET.valuesInSet.length - index > 1 ? index + 1 : 0;
         set.contains(DATA_SET.valuesInSet[index]);
     }
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void measureUnsuccessfulGet() {
         HashSet<BenchmarkDataSet.Key> set = CONSTANT_SET;
-        index= DATA_SET.valuesNotInSet.length-index>1?index+1:0;
+        index = DATA_SET.valuesNotInSet.length - index > 1 ? index + 1 : 0;
         set.contains(DATA_SET.valuesNotInSet[index]);
     }
+
+    @Benchmark
+    public boolean measureEqualsOfEqualSet() {
+        return CONSTANT_SET.equals(IDENTICAL_SET);
+    }
+
 }

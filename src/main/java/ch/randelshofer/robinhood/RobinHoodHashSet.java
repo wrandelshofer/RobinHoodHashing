@@ -40,36 +40,6 @@ public class RobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet<E> {
     }
 
     @Override
-    protected int hash(Object e, int length) {
-       return fastRange(goldenRatioAvalanche(e.hashCode()), length);
-    }
-
-
-    protected boolean isEqual(Object a, Object b) {
-        return a.equals(b);
-    }
-
-    @Override
-    protected void createTable(int capacity) {
-        table = new Object[capacity];
-    }
-
-    @Override
-    protected void setKeyInTable(int index, E e) {
-        table[index]=e;
-    }
-    @Override
-    protected void unsetTable(int index) {
-        table[index]=null;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    protected E getKeyFromTable(int index) {
-        return (E)table[index];
-    }
-
-    @Override
     protected void clearTable() {
         Arrays.fill(table, null);
     }
@@ -82,12 +52,42 @@ public class RobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet<E> {
     }
 
     @Override
-    protected void shiftForRemoval(int index) {
-        shiftForRemoval1(index,table);
+    protected void createTable(int capacity) {
+        table = new Object[capacity];
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected E getKeyFromTable(int index) {
+        return (E) table[index];
+    }
+
+    @Override
+    protected int hash(Object e, int length) {
+        return fastRange(goldenRatioAvalanche(e.hashCode()), length);
+    }
+
+    protected boolean isEqual(Object a, Object b) {
+        return a.equals(b);
+    }
+
+    @Override
+    protected void setKeyInTable(int index, E e) {
+        table[index] = e;
     }
 
     @Override
     protected void shiftForInsertion(int index) {
-        shiftForInsertion1(index,table);
+        shiftForInsertion1(index, table);
+    }
+
+    @Override
+    protected void shiftForRemoval(int index) {
+        shiftForRemoval1(index, table);
+    }
+
+    @Override
+    protected void unsetTable(int index) {
+        table[index] = null;
     }
 }

@@ -31,9 +31,11 @@ import java.util.concurrent.TimeUnit;
  * RobinHoodHashSet costStats:IntSummaryStatistics{count=100000, sum=8707, min=0, average=0.087070, max=3}
  * </pre>
  */
+@OutputTimeUnit(TimeUnit.NANOSECONDS)
+@BenchmarkMode(Mode.AverageTime)
 public class RobinHoodHashSetJmhBenchmark {
     private static int index;
-    private static BenchmarkDataSet DATA_SET = new BenchmarkDataSet(100_000, 0, 500_000);
+    private static BenchmarkDataSet DATA_SET = new BenchmarkDataSet(100_000, 0, 500_000, -1);
 
 
     private static final RobinHoodHashSet<BenchmarkDataSet.Key> CONSTANT_SET = new RobinHoodHashSet<>(DATA_SET.constantIdentitySet);
@@ -47,17 +49,13 @@ public class RobinHoodHashSetJmhBenchmark {
     }
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void measureNewInstance() {
         RobinHoodHashSet<BenchmarkDataSet.Key> set = new RobinHoodHashSet<>(
                 DATA_SET.constantIdentitySet.size()*4,
                 0.5f);
     }
-    /*
+
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void measureAddAll() {
         RobinHoodHashSet<BenchmarkDataSet.Key> set = new RobinHoodHashSet<>(
                 DATA_SET.constantIdentitySet.size()*4,
@@ -70,10 +68,8 @@ public class RobinHoodHashSetJmhBenchmark {
             throw new AssertionError();
         }
     }
-/*
+
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void measureAddAllAndGrow() {
         RobinHoodHashSet<BenchmarkDataSet.Key> set = new RobinHoodHashSet<>(
                 0,
@@ -88,15 +84,11 @@ public class RobinHoodHashSetJmhBenchmark {
     }
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public Object measureClone() {
         return CONSTANT_SET.clone();
     }
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void measureCloneAndRemoveAll() {
         RobinHoodHashSet<BenchmarkDataSet.Key> set = CONSTANT_SET.clone();
         boolean removed=true;
@@ -109,8 +101,6 @@ public class RobinHoodHashSetJmhBenchmark {
     }
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void measureRemoveAdd() {
         RobinHoodHashSet<BenchmarkDataSet.Key> set = CONSTANT_SET;
         index = DATA_SET.valuesInSet.length - index > 1 ? index + 1 : 0;
@@ -119,8 +109,6 @@ public class RobinHoodHashSetJmhBenchmark {
     }
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void measureSuccessfulGet() {
         RobinHoodHashSet<BenchmarkDataSet.Key> set = CONSTANT_SET;
         index = DATA_SET.valuesInSet.length - index > 1 ? index + 1 : 0;
@@ -128,13 +116,10 @@ public class RobinHoodHashSetJmhBenchmark {
     }
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void measureUnsuccessfulGet() {
         RobinHoodHashSet<BenchmarkDataSet.Key> set = CONSTANT_SET;
         index = DATA_SET.valuesNotInSet.length - index > 1 ? index + 1 : 0;
         set.contains(DATA_SET.valuesNotInSet[index]);
     }
-*/
 
 }

@@ -24,17 +24,18 @@ import java.util.concurrent.TimeUnit;
  * LinkedHashSetJmhBenchmark.measureUnsuccessfulGet    avgt   25        10.310 ±      0.048  ns/op
  * </pre>
  */
+@SuppressWarnings({"unchecked", "UseBulkOperation"})
+@OutputTimeUnit(TimeUnit.NANOSECONDS)
+@BenchmarkMode(Mode.AverageTime)
 public class LinkedHashSetJmhBenchmark {
     private static int index;
-    private static BenchmarkDataSet DATA_SET =new BenchmarkDataSet(100_000, 0, 500_000);
+    private static BenchmarkDataSet DATA_SET = new BenchmarkDataSet(100_000, 0, 500_000, -1);
 
     private static final LinkedHashSet<BenchmarkDataSet.Key> CONSTANT_SET = new LinkedHashSet<>(DATA_SET.constantIdentitySet);
     static {
         System.out.println("LinkedHashSet size:"+CONSTANT_SET.size());
     }
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void measureAddAll() {
         LinkedHashSet<BenchmarkDataSet.Key> set = new LinkedHashSet<>(
                 DATA_SET.constantIdentitySet.size()*2,
@@ -45,8 +46,6 @@ public class LinkedHashSetJmhBenchmark {
     }
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void measureAddAllAndGrow() {
         LinkedHashSet<BenchmarkDataSet.Key> set = new LinkedHashSet<>(
                 16,
@@ -57,15 +56,11 @@ public class LinkedHashSetJmhBenchmark {
     }
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void measureClone() {
         LinkedHashSet<BenchmarkDataSet.Key> set = (LinkedHashSet<BenchmarkDataSet.Key>) CONSTANT_SET.clone();
     }
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void measureCloneAndRemoveAll() {
         LinkedHashSet<BenchmarkDataSet.Key> set = (LinkedHashSet<BenchmarkDataSet.Key>) CONSTANT_SET.clone();
         for (BenchmarkDataSet.Key v : DATA_SET.valuesInSet) {
@@ -73,8 +68,6 @@ public class LinkedHashSetJmhBenchmark {
         }
     }
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void measureRemoveAdd() {
         LinkedHashSet<BenchmarkDataSet.Key> set = CONSTANT_SET;
         index= DATA_SET.valuesInSet.length-index>1?index+1:0;
@@ -83,8 +76,6 @@ public class LinkedHashSetJmhBenchmark {
     }
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public boolean measureSuccessfulGet() {
         LinkedHashSet<BenchmarkDataSet.Key> set = CONSTANT_SET;
         index= DATA_SET.valuesInSet.length-index>1?index+1:0;
@@ -92,8 +83,6 @@ public class LinkedHashSetJmhBenchmark {
     }
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public boolean measureUnsuccessfulGet() {
         LinkedHashSet<BenchmarkDataSet.Key> set = CONSTANT_SET;
         index= DATA_SET.valuesNotInSet.length-index>1?index+1:0;

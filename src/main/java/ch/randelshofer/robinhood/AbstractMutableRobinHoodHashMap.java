@@ -10,13 +10,12 @@ import java.util.Set;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
-public abstract class AbstractMutableRobinHoodHashMap<K,V> extends AbstractRobinHoodHashMap<K,V> implements Map<K,V> {
-   private class MapIterator  {
+public abstract class AbstractMutableRobinHoodHashMap<K, V> extends AbstractRobinHoodHashMap<K, V> implements Map<K, V> {
+    private class MapIterator {
         int mod = modCount;
         int index = 0;
         int remaining = size;
         K currentKey = null;
-
 
         public boolean hasNext() {
             if (mod != modCount) {
@@ -24,7 +23,6 @@ public abstract class AbstractMutableRobinHoodHashMap<K,V> extends AbstractRobin
             }
             return remaining > 0;
         }
-
 
         protected K move() {
             if (hasNext()) {
@@ -39,7 +37,6 @@ public abstract class AbstractMutableRobinHoodHashMap<K,V> extends AbstractRobin
             }
             throw new NoSuchElementException();
         }
-
 
         public void remove() {
             if (mod != modCount) {
@@ -59,9 +56,10 @@ public abstract class AbstractMutableRobinHoodHashMap<K,V> extends AbstractRobin
     private class KeySetIterator extends MapIterator implements Iterator<K> {
         @Override
         public K next() {
- return           move();
+            return move();
         }
     }
+
     public AbstractMutableRobinHoodHashMap() {
     }
 
@@ -73,18 +71,29 @@ public abstract class AbstractMutableRobinHoodHashMap<K,V> extends AbstractRobin
         super(initialCapacity, loadFactor);
     }
 
-    private Set<K> keySet=null;
+    private Set<K> keySet = null;
 
     final class KeySet extends AbstractSet<K> {
-        public final int size()                 { return size; }
-        public final void clear()               { AbstractMutableRobinHoodHashMap.this.clear(); }
-        public final Iterator<K> iterator()     {
+        public final int size() {
+            return size;
+        }
+
+        public final void clear() {
+            AbstractMutableRobinHoodHashMap.this.clear();
+        }
+
+        public final Iterator<K> iterator() {
             return new KeySetIterator();
         }
-        public final boolean contains(Object o) { return containsKey(o); }
+
+        public final boolean contains(Object o) {
+            return containsKey(o);
+        }
+
         public final boolean remove(Object key) {
             return AbstractMutableRobinHoodHashMap.this.remove(key) != null;
         }
+
         public final Spliterator<K> spliterator() {
             throw new UnsupportedOperationException();
         }
@@ -106,21 +115,25 @@ public abstract class AbstractMutableRobinHoodHashMap<K,V> extends AbstractRobin
     public void clear() {
         super.clear();
     }
+
     @Override
     public V put(K key, V value) {
-        return super.put(key,value);
+        return super.put(key, value);
     }
+
     @Override
     public Set<K> keySet() {
-        if (keySet==null){
-            keySet=new KeySet();
+        if (keySet == null) {
+            keySet = new KeySet();
         }
         return keySet;
     }
+
     @Override
     public V get(Object key) {
         return super.get(key);
     }
+
     @Override
     public V remove(Object key) {
         return super.remove(key);
@@ -129,14 +142,14 @@ public abstract class AbstractMutableRobinHoodHashMap<K,V> extends AbstractRobin
     @Override
     public void putAll(Map<? extends K, ? extends V> m) {
         for (Entry<? extends K, ? extends V> entry : m.entrySet()) {
-            put(entry.getKey(),entry.getValue());
+            put(entry.getKey(), entry.getValue());
         }
     }
 
 
     @Override
     public Collection<V> values() {
-     throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -149,7 +162,7 @@ public abstract class AbstractMutableRobinHoodHashMap<K,V> extends AbstractRobin
     protected AbstractMutableRobinHoodHashMap clone() {
         @SuppressWarnings("unchecked")
         var that = (AbstractMutableRobinHoodHashMap) super.clone();
-        that.keySet=null;
+        that.keySet = null;
         return that;
     }
 

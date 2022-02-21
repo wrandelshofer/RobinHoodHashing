@@ -28,9 +28,11 @@ import java.util.concurrent.TimeUnit;
  * LinkedRobinHoodHashSet costStats:IntSummaryStatistics{count=100000, sum=8707, min=0, average=0.087070, max=3}
  * </pre>
  */
+@OutputTimeUnit(TimeUnit.NANOSECONDS)
+@BenchmarkMode(Mode.AverageTime)
 public class LinkedRobinHoodHashSetJmhBenchmark {
     private static int index;
-    private static BenchmarkDataSet DATA_SET =new BenchmarkDataSet(100_000, 0, 500_000);
+    private static BenchmarkDataSet DATA_SET = new BenchmarkDataSet(100_000, 0, 500_000, -1);
 
 
     private static final LinkedRobinHoodHashSet<BenchmarkDataSet.Key> CONSTANT_SET = new LinkedRobinHoodHashSet<>(DATA_SET.constantIdentitySet);
@@ -43,8 +45,6 @@ public class LinkedRobinHoodHashSetJmhBenchmark {
     }
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void measureAddAll() {
         LinkedRobinHoodHashSet<BenchmarkDataSet.Key> set = new LinkedRobinHoodHashSet<>(
                 DATA_SET.constantIdentitySet.size()*2,
@@ -55,8 +55,6 @@ public class LinkedRobinHoodHashSetJmhBenchmark {
     }
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void measureAddAllAndGrow() {
         LinkedRobinHoodHashSet<BenchmarkDataSet.Key> set = new LinkedRobinHoodHashSet<>(
                 16,
@@ -67,15 +65,11 @@ public class LinkedRobinHoodHashSetJmhBenchmark {
     }
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void measureClone() {
         LinkedRobinHoodHashSet<BenchmarkDataSet.Key> set = (LinkedRobinHoodHashSet<BenchmarkDataSet.Key>) CONSTANT_SET.clone();
     }
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void measureCloneAndRemoveAll() {
         LinkedRobinHoodHashSet<BenchmarkDataSet.Key> set = (LinkedRobinHoodHashSet<BenchmarkDataSet.Key>) CONSTANT_SET.clone();
         for (BenchmarkDataSet.Key v : DATA_SET.valuesInSet) {
@@ -84,8 +78,6 @@ public class LinkedRobinHoodHashSetJmhBenchmark {
     }
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void measureRemoveAdd() {
         LinkedRobinHoodHashSet<BenchmarkDataSet.Key> set = CONSTANT_SET;
         index = DATA_SET.valuesInSet.length - index > 1 ? index + 1 : 0;
@@ -94,8 +86,6 @@ public class LinkedRobinHoodHashSetJmhBenchmark {
     }
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void measureSuccessfulGet() {
         LinkedRobinHoodHashSet<BenchmarkDataSet.Key> set = CONSTANT_SET;
         index = DATA_SET.valuesInSet.length - index > 1 ? index + 1 : 0;
@@ -103,8 +93,6 @@ public class LinkedRobinHoodHashSetJmhBenchmark {
     }
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void measureUnsuccessfulGet() {
         LinkedRobinHoodHashSet<BenchmarkDataSet.Key> set = CONSTANT_SET;
         index = DATA_SET.valuesNotInSet.length - index > 1 ? index + 1 : 0;

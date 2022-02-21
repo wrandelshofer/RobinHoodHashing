@@ -26,15 +26,15 @@ import java.util.concurrent.TimeUnit;
  * IdentityHashSetJmhBenchmark.measureUnsuccessfulGet   avgt   25        15.119 ±     0.360  ns/op
  * </pre>
  */
+@OutputTimeUnit(TimeUnit.NANOSECONDS)
+@BenchmarkMode(Mode.AverageTime)
 public class IdentityHashSetJmhBenchmark  {
-    private static BenchmarkDataSet DATA_SET =new BenchmarkDataSet(100_000, 0, 500_000);
+    private static BenchmarkDataSet DATA_SET = new BenchmarkDataSet(100_000, 0, 500_000, -1);
 
     private static final Set<BenchmarkDataSet.Key> CONSTANT_SET = DATA_SET.constantIdentitySet;
     private static int index;
 
-    //@Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
+    @Benchmark
     public void measureAddAll() {
         IdentityHashMap<BenchmarkDataSet.Key, Boolean> identityMap = new IdentityHashMap<>(DATA_SET.size);
         Set<BenchmarkDataSet.Key> set = Collections.newSetFromMap(identityMap);
@@ -43,9 +43,7 @@ public class IdentityHashSetJmhBenchmark  {
         }
     }
 
-    //@Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
+    @Benchmark
     public void measureAddAllAndGrow() {
         IdentityHashMap<BenchmarkDataSet.Key, Boolean> identityMap = new IdentityHashMap<>(16);
         Set<BenchmarkDataSet.Key> set = Collections.newSetFromMap(identityMap);
@@ -54,25 +52,20 @@ public class IdentityHashSetJmhBenchmark  {
         }
     }
 
-    //@Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
+    @Benchmark
     public void measureClone() {
         IdentityHashMap<BenchmarkDataSet.Key, Boolean> identityMap = (IdentityHashMap<BenchmarkDataSet.Key, Boolean>) DATA_SET.constantIdentityMap.clone();
     }
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void measureCloneAndRemoveAll() {
         IdentityHashMap<BenchmarkDataSet.Key, Boolean> map = (IdentityHashMap<BenchmarkDataSet.Key, Boolean>) DATA_SET.constantIdentityMap.clone();
         for (BenchmarkDataSet.Key v : DATA_SET.valuesInSet) {
             map.remove(v);
         }
     }
-    //@Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
+
+    @Benchmark
     public void measureRemoveAdd() {
         Set<BenchmarkDataSet.Key> set = CONSTANT_SET;
         index = DATA_SET.valuesInSet.length - index > 1 ? index + 1 : 0;
@@ -80,18 +73,14 @@ public class IdentityHashSetJmhBenchmark  {
         set.add(DATA_SET.valuesInSet[index]);
     }
 
-    //@Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
+    @Benchmark
     public void measureSuccessfulGet() {
         Set<BenchmarkDataSet.Key> set = CONSTANT_SET;
         index = DATA_SET.valuesInSet.length - index > 1 ? index + 1 : 0;
         set.contains(DATA_SET.valuesInSet[index]);
     }
 
-    //@Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
+    @Benchmark
     public void measureUnsuccessfulGet() {
         Set<BenchmarkDataSet.Key> set = CONSTANT_SET;
         index = DATA_SET.valuesNotInSet.length - index > 1 ? index + 1 : 0;

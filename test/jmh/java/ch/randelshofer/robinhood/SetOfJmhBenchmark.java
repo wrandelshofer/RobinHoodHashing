@@ -20,32 +20,26 @@ import java.util.concurrent.TimeUnit;
  * SetOfJmhBenchmark.measureUnsuccessfulGet  avgt   25  15.967 ± 0.209  ns/op
  * </pre>
  */
+@OutputTimeUnit(TimeUnit.NANOSECONDS)
+@BenchmarkMode(Mode.AverageTime)
 public class SetOfJmhBenchmark  {
-private static int index;
-    private static BenchmarkDataSet DATA_SET =new BenchmarkDataSet(100_000, 0, 500_000);
+    private static int index;
+    private static BenchmarkDataSet DATA_SET = new BenchmarkDataSet(100_000, 0, 500_000, -1);
     private static final Set<BenchmarkDataSet.Key> CONSTANT_SET = Set.copyOf(DATA_SET.constantIdentitySet);
 
 
-
-
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void measureClone() {
         Set.copyOf(DATA_SET.constantIdentitySet);
     }
 
    @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void measureSuccessfulGet() {
         Set<BenchmarkDataSet.Key> set = CONSTANT_SET;
         index= DATA_SET.valuesInSet.length-index>1?index+1:0;
         set.contains(DATA_SET.valuesInSet[index]);
     }
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void measureUnsuccessfulGet() {
         Set<BenchmarkDataSet.Key> set = CONSTANT_SET;
         index= DATA_SET.valuesNotInSet.length-index>1?index+1:0;

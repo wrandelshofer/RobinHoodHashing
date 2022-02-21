@@ -31,9 +31,11 @@ import java.util.concurrent.TimeUnit;
  * RobinHoodHashMap costStats:IntSummaryStatistics{count=100000, sum=8707, min=0, average=0.087070, max=3}
  * </pre>
  */
+@OutputTimeUnit(TimeUnit.NANOSECONDS)
+@BenchmarkMode(Mode.AverageTime)
 public class RobinHoodHashMapJmhBenchmark {
     private static int index;
-    private static BenchmarkDataSet DATA_SET = new BenchmarkDataSet(100_000, 0, 500_000);
+    private static BenchmarkDataSet DATA_SET = new BenchmarkDataSet(100_000, 0, 500_000, -1);
 
 
     private static final RobinHoodHashMap<BenchmarkDataSet.Key,Boolean> CONSTANT_SET = new RobinHoodHashMap<>(DATA_SET.constantIdentityMap);
@@ -45,19 +47,15 @@ public class RobinHoodHashMapJmhBenchmark {
         System.out.println("RobinHoodHashMap loadFactor:" + CONSTANT_SET.getLoadFactor());
         System.out.println("RobinHoodHashMap costStats:" + CONSTANT_SET.getCostStatistics());
     }
-/*
+
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void measureNewInstance() {
         RobinHoodHashMap<BenchmarkDataSet.Key,Boolean> set = new RobinHoodHashMap<>(
                 DATA_SET.constantIdentitySet.size()*4,
                 0.5f);
     }
-    */
+
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void measureAddAll() {
         RobinHoodHashMap<BenchmarkDataSet.Key,Boolean> set = new RobinHoodHashMap<>(
                 DATA_SET.constantIdentitySet.size()*4,
@@ -72,8 +70,6 @@ public class RobinHoodHashMapJmhBenchmark {
     }
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void measureAddAllAndGrow() {
         RobinHoodHashMap<BenchmarkDataSet.Key,Boolean> set = new RobinHoodHashMap<>(
                 0,
@@ -84,25 +80,19 @@ public class RobinHoodHashMapJmhBenchmark {
     }
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public Object measureClone() {
      return   (RobinHoodHashMap<BenchmarkDataSet.Key,Boolean>) CONSTANT_SET.clone();
     }
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void measureCloneAndRemoveAll() {
         RobinHoodHashMap<BenchmarkDataSet.Key,Boolean> set = (RobinHoodHashMap<BenchmarkDataSet.Key,Boolean>) CONSTANT_SET.clone();
         for (BenchmarkDataSet.Key v : DATA_SET.valuesInSet) {
             set.remove(v);
         }
     }
-/*
+
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void measureRemoveAdd() {
         RobinHoodHashMap<BenchmarkDataSet.Key,Boolean> set = CONSTANT_SET;
         index = DATA_SET.valuesInSet.length - index > 1 ? index + 1 : 0;
@@ -111,8 +101,6 @@ public class RobinHoodHashMapJmhBenchmark {
     }
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void measureSuccessfulGet() {
         RobinHoodHashMap<BenchmarkDataSet.Key,Boolean> set = CONSTANT_SET;
         index = DATA_SET.valuesInSet.length - index > 1 ? index + 1 : 0;
@@ -120,13 +108,11 @@ public class RobinHoodHashMapJmhBenchmark {
     }
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void measureUnsuccessfulGet() {
         RobinHoodHashMap<BenchmarkDataSet.Key,Boolean> set = CONSTANT_SET;
         index = DATA_SET.valuesNotInSet.length - index > 1 ? index + 1 : 0;
         set.containsKey(DATA_SET.valuesNotInSet[index]);
     }
-*/
+
 
 }

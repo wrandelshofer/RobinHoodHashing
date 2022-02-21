@@ -29,9 +29,11 @@ import java.util.concurrent.TimeUnit;
  * IdentityRobinHoodHashSet costStats:IntSummaryStatistics{count=100000, sum=24989, min=0, average=0.249890, max=6}
  * </pre>
  */
+@OutputTimeUnit(TimeUnit.NANOSECONDS)
+@BenchmarkMode(Mode.AverageTime)
 public class IdentityRobinHoodHashSetJmhBenchmark  {
     private static int index;
-    private static BenchmarkDataSet DATA_SET =new BenchmarkDataSet(100_000, 0, 500_000);
+    private static BenchmarkDataSet DATA_SET = new BenchmarkDataSet(100_000, 0, 500_000, -1);
 
 
     private static final IdentityRobinHoodHashSet<BenchmarkDataSet.Key> CONSTANT_SET = new IdentityRobinHoodHashSet<>(DATA_SET.constantIdentitySet);
@@ -44,8 +46,6 @@ public class IdentityRobinHoodHashSetJmhBenchmark  {
     }
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void measureAddAll() {
         IdentityRobinHoodHashSet<BenchmarkDataSet.Key> set = new IdentityRobinHoodHashSet<>(
                 DATA_SET.constantIdentitySet.size()*3,                0.5f);
@@ -55,8 +55,6 @@ public class IdentityRobinHoodHashSetJmhBenchmark  {
     }
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void measureAddAllAndGrow() {
         IdentityRobinHoodHashSet<BenchmarkDataSet.Key> set = new IdentityRobinHoodHashSet<>(
                 16,
@@ -67,15 +65,11 @@ public class IdentityRobinHoodHashSetJmhBenchmark  {
     }
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void measureClone() {
         IdentityRobinHoodHashSet<BenchmarkDataSet.Key> set = (IdentityRobinHoodHashSet<BenchmarkDataSet.Key>) CONSTANT_SET.clone();
     }
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void measureCloneAndRemoveAll() {
         IdentityRobinHoodHashSet<BenchmarkDataSet.Key> set = (IdentityRobinHoodHashSet<BenchmarkDataSet.Key>) CONSTANT_SET.clone();
         for (BenchmarkDataSet.Key v : DATA_SET.valuesInSet) {
@@ -85,8 +79,6 @@ public class IdentityRobinHoodHashSetJmhBenchmark  {
 
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void measureRemoveAdd() {
         IdentityRobinHoodHashSet<BenchmarkDataSet.Key> set = CONSTANT_SET;
         index = DATA_SET.valuesInSet.length - index > 1 ? index + 1 : 0;
@@ -95,8 +87,6 @@ public class IdentityRobinHoodHashSetJmhBenchmark  {
     }
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void measureSuccessfulGet() {
         IdentityRobinHoodHashSet<BenchmarkDataSet.Key> set = CONSTANT_SET;
         index = DATA_SET.valuesInSet.length - index > 1 ? index + 1 : 0;
@@ -104,8 +94,6 @@ public class IdentityRobinHoodHashSetJmhBenchmark  {
     }
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void measureUnsuccessfulGet() {
         IdentityRobinHoodHashSet<BenchmarkDataSet.Key> set = CONSTANT_SET;
         index = DATA_SET.valuesNotInSet.length - index > 1 ? index + 1 : 0;

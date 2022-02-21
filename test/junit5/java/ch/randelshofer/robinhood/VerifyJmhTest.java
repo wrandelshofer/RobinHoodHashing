@@ -25,7 +25,7 @@ private static class InstrumentedRobinHoodHashSet<E> extends RobinHoodHashSet<E>
 @Test
 public void verifyKeys() {
     BenchmarkDataSet dataSet = new BenchmarkDataSet(100_000, Integer.MIN_VALUE,
-            Integer.MAX_VALUE);
+            Integer.MAX_VALUE, -1);
 
     VarianceStatistics intStats=new VarianceStatistics();
     VarianceStatistics hashStats=new VarianceStatistics();
@@ -44,7 +44,7 @@ public void verifyKeys() {
     public void verifyGet() {
         //BenchmarkDataSet dataSet = new BenchmarkDataSet(100_000, 0, 500_000);
         BenchmarkDataSet dataSet = new BenchmarkDataSet(100_000, Integer.MIN_VALUE,
-                Integer.MAX_VALUE);
+                Integer.MAX_VALUE, -1);
 
         InstrumentedRobinHoodHashSet<BenchmarkDataSet.Key> set = new InstrumentedRobinHoodHashSet<>(dataSet.constantIdentitySet,
                 dataSet.constantIdentitySet.size()*3,0.625f);

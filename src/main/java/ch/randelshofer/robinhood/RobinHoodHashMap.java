@@ -8,6 +8,8 @@ import static ch.randelshofer.robinhood.AvalancheAlgorithms.goldenRatioAvalanche
 import static ch.randelshofer.robinhood.RangeAlgorithms.fastRange;
 
 public class RobinHoodHashMap<K, V> extends AbstractMutableRobinHoodHashMap<K, V> {
+    private Object[] table;
+
     public RobinHoodHashMap() {
     }
 
@@ -18,20 +20,30 @@ public class RobinHoodHashMap<K, V> extends AbstractMutableRobinHoodHashMap<K, V
     public RobinHoodHashMap(int initialCapacity, float loadFactor) {
         super(initialCapacity, loadFactor);
     }
+
     public RobinHoodHashMap(Map<? extends K, ? extends V> m, int initialCapacity, float loadFactor) {
         super(initialCapacity, loadFactor);
         for (Entry<? extends K, ? extends V> entry : m.entrySet()) {
-            put(entry.getKey(),entry.getValue());
+            put(entry.getKey(), entry.getValue());
         }
     }
 
-
     public RobinHoodHashMap(Map<? extends K, ? extends V> m) {
-        this(m,m.size()*4,0.5f);
-
+        this(m, m.size() * 4, 0.5f);
     }
 
-    private Object[] table;
+    @Override
+    protected void clearTable() {
+        Arrays.fill(table, null);
+    }
+
+    @Override
+    protected RobinHoodHashMap<K, V> clone() {
+        @SuppressWarnings("unchecked")
+        var that = (RobinHoodHashMap<K, V>) super.clone();
+        that.table = this.table.clone();
+        return that;
+    }
 
     @Override
     protected void createTable(int capacity) {
@@ -42,6 +54,12 @@ public class RobinHoodHashMap<K, V> extends AbstractMutableRobinHoodHashMap<K, V
     @Override
     protected K getKeyFromTable(int index) {
         return (K) table[index * 2];
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected V getValueFromTable(int index) {
+        return (V) table[index * 2 + 1];
     }
 
     @Override
@@ -55,13 +73,13 @@ public class RobinHoodHashMap<K, V> extends AbstractMutableRobinHoodHashMap<K, V
     }
 
     @Override
-    protected void shiftForInsertion(int index) {
-        shiftForInsertion2(index, table);
+    protected void setKeyInTable(int index, K k) {
+        table[index * 2] = k;
     }
 
     @Override
-    protected void setKeyInTable(int index, K k) {
-        table[index * 2] = k;
+    protected void setValueInTable(int index, V e) {
+        table[index * 2 + 1] = e;
     }
 
     @Override
@@ -69,28 +87,14 @@ public class RobinHoodHashMap<K, V> extends AbstractMutableRobinHoodHashMap<K, V
         table[index * 2 + 1] = k;
     }
 
-
-    @SuppressWarnings("unchecked")
     @Override
-    protected V getValueFromTable(int index) {
-        return (V) table[index * 2 + 1];
-    }
-
-    @Override
-    protected void unsetTable(int index) {
-        table[index * 2] = null;
-        table[index * 2 + 1] = null;
+    protected void shiftForInsertion(int index) {
+        shiftForInsertion2(index, table);
     }
 
     @Override
     protected void shiftForRemoval(int index) {
         shiftForRemoval2(index, table);
-    }
-
-
-    @Override
-    protected void setValueInTable(int index, V e) {
-        table[index * 2 + 1] = e;
     }
 
     protected Object[] toArray() {
@@ -106,18 +110,10 @@ public class RobinHoodHashMap<K, V> extends AbstractMutableRobinHoodHashMap<K, V
         return r;
     }
 
-
     @Override
-    protected void clearTable() {
-        Arrays.fill(table, null);
-    }
-    @Override
-    protected RobinHoodHashMap clone() {
-        @SuppressWarnings("unchecked")
-        var that = (RobinHoodHashMap) super.clone();
-        that.table=this.table.clone();
-        return that;
-
+    protected void unsetTable(int index) {
+        table[index * 2] = null;
+        table[index * 2 + 1] = null;
     }
 
 }

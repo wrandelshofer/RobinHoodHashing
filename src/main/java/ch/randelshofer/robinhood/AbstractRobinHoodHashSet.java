@@ -63,8 +63,7 @@ abstract class AbstractRobinHoodHashSet<E> extends AbstractRobinHoodHashing<E> i
 
 
     public boolean contains(Object o) {
-        boolean b = find(o, hash(o, capacity)) >= 0;
-        return b;
+        return find(o, hash(o, capacity)) >= 0;
     }
 
     public boolean containsAll(Collection<?> c) {

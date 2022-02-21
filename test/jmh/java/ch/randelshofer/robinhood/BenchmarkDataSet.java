@@ -8,7 +8,42 @@ import java.util.Random;
 import java.util.Set;
 
 public class BenchmarkDataSet {
-    public static record Key(int id) {
+    public static final class Key {
+        private final int id;
+        private final int hash;
+
+        public Key(int id, int hashMask) {
+            this.id = id;
+            this.hash = id & hashMask;
+        }
+
+        public int id() {
+            return id;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == this) {
+                return true;
+            }
+            if (obj == null || obj.getClass() != this.getClass()) {
+                return false;
+            }
+            var that = (Key) obj;
+            return this.id == that.id;
+        }
+
+        @Override
+        public int hashCode() {
+            return hash;
+        }
+
+        @Override
+        public String toString() {
+            return "Key[" +
+                    "id=" + id + ']';
+        }
+
     }
 
     public final int keyRangeMax;
@@ -19,8 +54,9 @@ public class BenchmarkDataSet {
 
     public final Set<Key> constantIdentitySet;
     public final IdentityHashMap<Key, Boolean> constantIdentityMap;
+    public final IdentityHashMap<Key, Boolean> constantIdentityMapWithNewValues;
 
-    public BenchmarkDataSet(int size, int keyRangeMin, int keyRangeMax) {
+    public BenchmarkDataSet(int size, int keyRangeMin, int keyRangeMax, int hashMask) {
         this.keyRangeMax = keyRangeMax;
         this.keyRangeMin = keyRangeMin;
         this.size = size;
@@ -32,20 +68,23 @@ public class BenchmarkDataSet {
         // half of the capacity.
         Set<Key> set0 = new HashSet<>(this.size * 2);
         IdentityHashMap<Key, Boolean> identityMap = new IdentityHashMap<>(this.size);
+        IdentityHashMap<Key, Boolean> identityMapWithNewValues = new IdentityHashMap<>(this.size);
         Set<Key> set = Collections.newSetFromMap(identityMap);
         for (int i = 0; i < valuesInSet.length; i++) {
             Key k;
             do {
-                k = new Key(nextRng(rng));
+                k = new Key(nextRng(rng), hashMask);
             } while (!set0.add(k));
             set.add(k);
             valuesInSet[i] = k;
         }
-
+        for (Key k : set) {
+            identityMapWithNewValues.put(k, false);
+        }
         for (int i = 0; i < valuesInSet.length; i++) {
             Key k;
             do {
-                k = new Key(nextRng(rng));
+                k = new Key(nextRng(rng), hashMask);
             } while (set0.contains(k));
             valuesNotInSet[i] = k;
         }
@@ -55,6 +94,7 @@ public class BenchmarkDataSet {
 
         constantIdentitySet = set;
         constantIdentityMap = identityMap;
+        constantIdentityMapWithNewValues = identityMapWithNewValues;
     }
 
     private int nextRng(Random rng) {
