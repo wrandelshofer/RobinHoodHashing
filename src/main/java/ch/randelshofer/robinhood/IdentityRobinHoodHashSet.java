@@ -4,9 +4,8 @@ package ch.randelshofer.robinhood;
 import java.util.Arrays;
 import java.util.Collection;
 
-import static ch.randelshofer.robinhood.AvalancheAlgorithms.goldenRatioAvalanche;
-import static ch.randelshofer.robinhood.RangeAlgorithms.fastRange;
-import static java.lang.Math.max;
+import static ch.randelshofer.robinhood.RangeAlgorithms.powerOf2Range;
+import static ch.randelshofer.robinhood.RangeAlgorithms.roundUpToPowerOf2;
 
 /**
  * Identity Robin Hood Hash Set.
@@ -24,7 +23,7 @@ public class IdentityRobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet
     }
 
     public IdentityRobinHoodHashSet(int initialCapacity) {
-        super(initialCapacity);
+        this(initialCapacity, 0.5f);
     }
 
     public IdentityRobinHoodHashSet(int initialCapacity, float loadFactor) {
@@ -32,11 +31,11 @@ public class IdentityRobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet
     }
 
     public IdentityRobinHoodHashSet(Collection<? extends E> c) {
-        super(c);
+        this(c, c.size() * 2, 0.5f);
     }
 
     public IdentityRobinHoodHashSet(Collection<? extends E> c, int initialCapacity, float loadFactor) {
-        super(c, initialCapacity,loadFactor);
+        super(c, initialCapacity, loadFactor);
     }
 
     @Override
@@ -59,12 +58,17 @@ public class IdentityRobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet
     @SuppressWarnings("unchecked")
     @Override
     protected E getKeyFromTable(int index) {
-        return (E)table[index];
+        return (E) table[index];
+    }
+
+    @Override
+    protected int roundCapacity(int desiredCapacity) {
+        return roundUpToPowerOf2(desiredCapacity);
     }
 
     @Override
     protected int hash(Object e, int length) {
-        return fastRange(goldenRatioAvalanche(System.identityHashCode(e)), length);
+        return powerOf2Range((System.identityHashCode(e)), length);
     }
 
     protected boolean isEqual(Object a, Object b) {
@@ -73,21 +77,21 @@ public class IdentityRobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet
 
     @Override
     protected void setKeyInTable(int index, E e) {
-        table[index]=e;
+        table[index] = e;
     }
 
     @Override
     protected void shiftForInsertion(int index) {
-        shiftForInsertion1(index,table);
+        shiftForInsertion1(index, table);
     }
 
     @Override
     protected void shiftForRemoval(int index) {
-        shiftForRemoval1(index,table);
+        shiftForRemoval1(index, table);
     }
 
     @Override
     protected void unsetTable(int index) {
-        table[index]=null;
+        table[index] = null;
     }
 }

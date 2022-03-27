@@ -2,8 +2,11 @@ package ch.randelshofer.robinhood;
 
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Warmup;
 
 import java.util.Collections;
 import java.util.IdentityHashMap;
@@ -16,16 +19,19 @@ import java.util.concurrent.TimeUnit;
  * # VM version: JDK 17, OpenJDK 64-Bit Server VM, 17+35-2724
  * # Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz
  *
- * Benchmark                                            Mode  Cnt   Score   Error  Units
- * IdentityHashSetJmhBenchmark.measureAddAll            avgt   25  41_47140.376 ± 87510.859  ns/op
- * IdentityHashSetJmhBenchmark.measureAddAllAndGrow     avgt   25  63_04410.974 ± 72965.884  ns/op
- * IdentityHashSetJmhBenchmark.measureClone             avgt   25  10_09419.270 ± 56729.792  ns/op
- * IdentityHashSetJmhBenchmark.measureCloneAndRemoveAll avgt   25  35_24395.592 ± 365843.009  ns/op
- * IdentityHashSetJmhBenchmark.measureRemoveAdd         avgt   25        62.109 ±     3.997  ns/op
- * IdentityHashSetJmhBenchmark.measureSuccessfulGet     avgt   25        11.029 ±     0.173  ns/op
- * IdentityHashSetJmhBenchmark.measureUnsuccessfulGet   avgt   25        15.119 ±     0.360  ns/op
+ * Benchmark                                             Mode  Cnt   Score   Error  Units
+ * IdentityHashSetJmhBenchmark.measureAddAll             avgt    2  3070578.078          ns/op
+ * IdentityHashSetJmhBenchmark.measureAddAllAndGrow      avgt    2  6406697.484          ns/op
+ * IdentityHashSetJmhBenchmark.measureClone              avgt    2   873753.743          ns/op
+ * IdentityHashSetJmhBenchmark.measureCloneAndRemoveAll  avgt    2  3025901.831          ns/op
+ * IdentityHashSetJmhBenchmark.measureRemoveAdd          avgt    2       54.085          ns/op
+ * IdentityHashSetJmhBenchmark.measureSuccessfulGet      avgt    2        8.669          ns/op
+ * IdentityHashSetJmhBenchmark.measureUnsuccessfulGet    avgt    2       13.436          ns/op
  * </pre>
  */
+@Fork(value = 1, jvmArgsAppend = {})
+@Measurement(iterations = 2)
+@Warmup(iterations = 2)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @BenchmarkMode(Mode.AverageTime)
 public class IdentityHashSetJmhBenchmark  {

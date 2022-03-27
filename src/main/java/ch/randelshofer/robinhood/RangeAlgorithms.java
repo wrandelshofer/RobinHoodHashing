@@ -101,4 +101,14 @@ public class RangeAlgorithms {
         return word & (powerOf2 - 1);
     }
 
+    /**
+     * Rounds the specified value up to a power of two, so that it
+     * can be used as a length with {@link #powerOf2Range(int, int)}.
+     *
+     * @param value a value
+     * @return the value rounded up to a power of two.
+     */
+    public static int roundUpToPowerOf2(int value) {
+        return Math.max(0, Integer.highestOneBit(value + value - 1));
+    }
 }

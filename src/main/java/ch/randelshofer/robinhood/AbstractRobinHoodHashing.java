@@ -2,7 +2,7 @@ package ch.randelshofer.robinhood;
 
 import java.util.IntSummaryStatistics;
 
-public abstract class AbstractRobinHoodHashing<E> implements Cloneable{
+public abstract class AbstractRobinHoodHashing<E> implements Cloneable {
     /**
      * The number of non-empty elements in the table.
      */
@@ -25,7 +25,6 @@ public abstract class AbstractRobinHoodHashing<E> implements Cloneable{
     protected transient int modCount;
 
 
-
     /**
      * Invariant: maxLoad = clamp(table.length * maxLoadFactor, 0, table.length)
      */
@@ -37,18 +36,19 @@ public abstract class AbstractRobinHoodHashing<E> implements Cloneable{
 
 
     protected AbstractRobinHoodHashing() {
-        this(0,0.5f);
+        this(0, 0.5f);
     }
 
 
     protected AbstractRobinHoodHashing(int initialCapacity) {
-        this(initialCapacity,0.5f);
+        this(initialCapacity, 0.5f);
     }
 
     /**
      * Creates an empty hash set with the specified constraints.
-     *  @param initialCapacity the initial capacity
-     * @param loadFactor        the maximal load factor upon insertion
+     *
+     * @param initialCapacity the initial capacity
+     * @param loadFactor      the maximal load factor upon insertion
      */
     protected AbstractRobinHoodHashing(int initialCapacity, float loadFactor) {
         if (initialCapacity < 0) {
@@ -58,14 +58,22 @@ public abstract class AbstractRobinHoodHashing<E> implements Cloneable{
             throw new IllegalArgumentException("loadFactor=" + loadFactor);
         }
         this.loadFactor = loadFactor;
-        this.capacity = initialCapacity;
-        computeThreshold(initialCapacity);
-        createTable(initialCapacity);
+        this.capacity = roundCapacity(initialCapacity);
+        computeThreshold(this.capacity);
+        createTable(this.capacity);
     }
 
     protected void computeThreshold(int capacity) {
-        threshold = Math.max((int)(capacity* loadFactor), 0);
+        threshold = Math.max((int) (capacity * loadFactor), 0);
     }
+
+    /**
+     * Rounds the capacity up so that it supports the range operation.
+     */
+    protected int roundCapacity(int desiredCapacity) {
+        return desiredCapacity;
+    }
+
     protected abstract void createTable(int capacity);
 
 
@@ -81,6 +89,7 @@ public abstract class AbstractRobinHoodHashing<E> implements Cloneable{
     public boolean isEmpty() {
         return size == 0;
     }
+
     /**
      * Searches for the specified element.
      * <p>
@@ -143,7 +152,7 @@ public abstract class AbstractRobinHoodHashing<E> implements Cloneable{
     /**
      * Returns true if the provided objects are equal
      *
-     * @param a     object a
+     * @param a object a
      * @param b object b
      * @return whether the objects are equal
      */
@@ -197,9 +206,9 @@ public abstract class AbstractRobinHoodHashing<E> implements Cloneable{
             }
         }
 
-        if (end == index+1) {
+        if (end == index + 1) {
 
-        }else if (end < index) {
+        } else if (end < index) {
             // wrap around
             System.arraycopy(table, index + 1, table, index, length - index - 1);
             table[length - 1] = table[0];
@@ -213,6 +222,7 @@ public abstract class AbstractRobinHoodHashing<E> implements Cloneable{
         var index1 = end == 0 ? table.length - 1 : end - 1;
         table[index1] = null;
     }
+
     protected void shiftForRemoval2(int index, Object[] table) {
 
 
@@ -221,28 +231,28 @@ public abstract class AbstractRobinHoodHashing<E> implements Cloneable{
         // table bucket with zero cost in the table. This is guaranteed
         // by the invariant that there is always at least one empty bucket
         // in the table.
-        var length = table.length/2;
+        var length = table.length / 2;
         var end = index + 1 == length ? 0 : index + 1;
         while (getCost(end) != 0) {
             if (++end == length) {
                 end = 0;
             }
         }
-        if (end == index+1) {
-        }else if (end < index) {
+        if (end == index + 1) {
+        } else if (end < index) {
             // wrap around
-            System.arraycopy(table, (index + 1)*2, table, index*2, (length - index - 1)*2);
+            System.arraycopy(table, (index + 1) * 2, table, index * 2, (length - index - 1) * 2);
             table[length - 1] = table[0];
             if (end > 0) {
-                System.arraycopy(table, 2, table, 0, (end - 1)*2);
+                System.arraycopy(table, 2, table, 0, (end - 1) * 2);
             }
         } else {
-            System.arraycopy(table, (index + 1)*2, table, index*2, (end - index)*2);
+            System.arraycopy(table, (index + 1) * 2, table, index * 2, (end - index) * 2);
         }
 
         var index1 = end == 0 ? length - 1 : end - 1;
-        table[index1*2] = null;
-        table[index1*2+1] = null;
+        table[index1 * 2] = null;
+        table[index1 * 2 + 1] = null;
     }
 
 
@@ -252,7 +262,7 @@ public abstract class AbstractRobinHoodHashing<E> implements Cloneable{
         }
 
         var length = table.length;
-        var end = index<length-1?index+1:0;
+        var end = index < length - 1 ? index + 1 : 0;
         while (table[end] != null) {
             if (++end == length) {
                 end = 0;
@@ -270,14 +280,15 @@ public abstract class AbstractRobinHoodHashing<E> implements Cloneable{
 
         table[index] = null;
     }
+
     protected void shiftForInsertion2(int index, Object[] table) {
-        if (table[index*2] == null) {
+        if (table[index * 2] == null) {
             return;
         }
 
-        var length = table.length/2;
-        var end = index<length-1?index+1:0;
-        while (table[end*2] != null) {
+        var length = table.length / 2;
+        var end = index < length - 1 ? index + 1 : 0;
+        while (table[end * 2] != null) {
             if (++end == length) {
                 end = 0;
             }
@@ -285,25 +296,24 @@ public abstract class AbstractRobinHoodHashing<E> implements Cloneable{
 
         if (end < index) {
             // wrap around
-            System.arraycopy(table, 0, table, 2, end*2);
-            table[0] = table[(length -1)*2];
-            table[1] = table[(length -1)*2+1];
-            System.arraycopy(table, index*2, table, (index + 1)*2,( length - index - 1)*2);
+            System.arraycopy(table, 0, table, 2, end * 2);
+            table[0] = table[(length - 1) * 2];
+            table[1] = table[(length - 1) * 2 + 1];
+            System.arraycopy(table, index * 2, table, (index + 1) * 2, (length - index - 1) * 2);
         } else {
-            System.arraycopy(table, index*2, table, (index + 1)*2, (end - index)*2);
+            System.arraycopy(table, index * 2, table, (index + 1) * 2, (end - index) * 2);
         }
 
-        table[index*2] = null;
-        table[index*2+1] = null;
+        table[index * 2] = null;
+        table[index * 2 + 1] = null;
     }
+
     @SuppressWarnings("unchecked")
     protected abstract void resize(int newCapacity);
 
 
-
-
     protected void grow() {
-        int desiredCapacity = Math.max(0,(int)((size+1)*2f/loadFactor));
+        int desiredCapacity = Math.max(1, capacity  *2);
         if (desiredCapacity < size + 1) {
             throw new IllegalStateException("Cannot grow table.");
         }
@@ -312,6 +322,7 @@ public abstract class AbstractRobinHoodHashing<E> implements Cloneable{
             resize(desiredCapacity);
         }
     }
+
     protected abstract void shiftForInsertion(int index);
 
     protected abstract void setKeyInTable(int index, E e);

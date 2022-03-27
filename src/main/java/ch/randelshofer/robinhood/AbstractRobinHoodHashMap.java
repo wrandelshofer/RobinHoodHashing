@@ -104,19 +104,21 @@ public abstract class AbstractRobinHoodHashMap<K, V> extends AbstractRobinHoodHa
     protected abstract V getValueFromTable(int index);
     protected abstract void unsetTable(int index);
     protected abstract void shiftForRemoval(int index);
+
     protected void clear() {
-        clearTable();
-        size = 0;
-        modCount++;
+        if (size != 0) {
+            clearTable();
+            size = 0;
+            modCount++;
+        }
     }
 
     protected abstract void clearTable();
 
-
     @Override
-    protected AbstractRobinHoodHashMap clone() {
-            @SuppressWarnings("unchecked")
-            var that = (AbstractRobinHoodHashMap) super.clone();
+    protected AbstractRobinHoodHashMap<K, V> clone() {
+        @SuppressWarnings("unchecked")
+        var that = (AbstractRobinHoodHashMap<K, V>) super.clone();
         return that;
     }
 }

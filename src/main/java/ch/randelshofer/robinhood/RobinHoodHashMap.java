@@ -21,6 +21,10 @@ public class RobinHoodHashMap<K, V> extends AbstractMutableRobinHoodHashMap<K, V
         super(initialCapacity, loadFactor);
     }
 
+    public RobinHoodHashMap(Map<? extends K, ? extends V> m, float loadFactor) {
+        this(m, (int) (m.size() / loadFactor), loadFactor);
+    }
+
     public RobinHoodHashMap(Map<? extends K, ? extends V> m, int initialCapacity, float loadFactor) {
         super(initialCapacity, loadFactor);
         for (Entry<? extends K, ? extends V> entry : m.entrySet()) {
@@ -29,7 +33,7 @@ public class RobinHoodHashMap<K, V> extends AbstractMutableRobinHoodHashMap<K, V
     }
 
     public RobinHoodHashMap(Map<? extends K, ? extends V> m) {
-        this(m, m.size() * 4, 0.5f);
+        this(m, m.size() * 2, 0.5f);
     }
 
     @Override

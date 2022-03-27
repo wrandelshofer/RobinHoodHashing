@@ -2,8 +2,11 @@ package ch.randelshofer.robinhood;
 
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Warmup;
 
 import java.util.concurrent.TimeUnit;
 
@@ -15,22 +18,26 @@ import java.util.concurrent.TimeUnit;
  * # -Xmx8g
  *
  * Benchmark                                             Mode  Cnt        Score        Error  Units
- * RobinHoodHashSetJmhBenchmark.measureAddAll            avgt   25  14_47494.150 ± 128516.986  ns/op
- * RobinHoodHashSetJmhBenchmark.measureAddAllAndGrow     avgt   25  61_89208.353 ±  68023.599  ns/op
- * RobinHoodHashSetJmhBenchmark.measureClone             avgt   25     85105.879 ±    145.628  ns/op
- * RobinHoodHashSetJmhBenchmark.measureCloneAndRemoveAll avgt   25  15_54209.786 ± 30035.416  ns/op
- * RobinHoodHashSetJmhBenchmark.measureRemoveAdd         avgt   25        35.566 ±     1.039  ns/op
- * RobinHoodHashSetJmhBenchmark.measureSuccessfulGet     avgt   25         9.225 ±      0.791  ns/op
- * RobinHoodHashSetJmhBenchmark.measureUnsuccessfulGet   avgt   25        14.319 ±      1.003  ns/op
+ * RobinHoodHashSetJmhBenchmark.measureAddAll             avgt    2  2035811.479          ns/op
+ * RobinHoodHashSetJmhBenchmark.measureAddAllAndGrow      avgt    2  4860091.689          ns/op
+ * RobinHoodHashSetJmhBenchmark.measureClone              avgt    2    54269.321          ns/op
+ * RobinHoodHashSetJmhBenchmark.measureCloneAndRemoveAll  avgt    2  1977180.581          ns/op
+ * RobinHoodHashSetJmhBenchmark.measureNewInstance        avgt    2        1.586          ns/op
+ * RobinHoodHashSetJmhBenchmark.measureRemoveAdd          avgt    2       53.482          ns/op
+ * RobinHoodHashSetJmhBenchmark.measureSuccessfulGet      avgt    2       10.249          ns/op
+ * RobinHoodHashSetJmhBenchmark.measureUnsuccessfulGet    avgt    2       16.128          ns/op
  *
  * The hashtable fits into the L3 cache.
  *
- * RobinHoodHashSet capacity:400000
- * RobinHoodHashSet fillRatio:0.25
+ * RobinHoodHashSet capacity:200000
+ * RobinHoodHashSet fillRatio:0.5
  * RobinHoodHashSet loadFactor:0.5
- * RobinHoodHashSet costStats:IntSummaryStatistics{count=100000, sum=8707, min=0, average=0.087070, max=3}
+ * RobinHoodHashSet costStats:IntSummaryStatistics{count=100000, sum=34303, min=0, average=0.343030, max=7}
  * </pre>
  */
+@Fork(value = 1, jvmArgsAppend = {})
+@Measurement(iterations = 2)
+@Warmup(iterations = 2)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @BenchmarkMode(Mode.AverageTime)
 public class RobinHoodHashSetJmhBenchmark {
@@ -51,14 +58,14 @@ public class RobinHoodHashSetJmhBenchmark {
     @Benchmark
     public void measureNewInstance() {
         RobinHoodHashSet<BenchmarkDataSet.Key> set = new RobinHoodHashSet<>(
-                DATA_SET.constantIdentitySet.size()*4,
+                DATA_SET.constantIdentitySet.size() * 2,
                 0.5f);
     }
 
     @Benchmark
     public void measureAddAll() {
         RobinHoodHashSet<BenchmarkDataSet.Key> set = new RobinHoodHashSet<>(
-                DATA_SET.constantIdentitySet.size()*4,
+                DATA_SET.constantIdentitySet.size() * 2,
                 0.5f);
         boolean added=true;
         for (BenchmarkDataSet.Key v : DATA_SET.valuesInSet) {
@@ -72,7 +79,7 @@ public class RobinHoodHashSetJmhBenchmark {
     @Benchmark
     public void measureAddAllAndGrow() {
         RobinHoodHashSet<BenchmarkDataSet.Key> set = new RobinHoodHashSet<>(
-                0,
+                16,
                 0.5f);
         boolean added=true;
         for (BenchmarkDataSet.Key v : DATA_SET.valuesInSet) {

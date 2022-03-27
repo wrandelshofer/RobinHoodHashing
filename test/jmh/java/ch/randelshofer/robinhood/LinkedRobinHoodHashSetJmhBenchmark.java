@@ -2,8 +2,11 @@ package ch.randelshofer.robinhood;
 
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Warmup;
 
 import java.util.concurrent.TimeUnit;
 
@@ -14,20 +17,23 @@ import java.util.concurrent.TimeUnit;
  * # Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz
  *
  * Benchmark                                                    Mode  Cnt        Score        Error  Units
- * LinkedRobinHoodHashSetJmhBenchmark.measureAddAll             avgt   25  24_34411.214 ±  28144.986  ns/op
- * LinkedRobinHoodHashSetJmhBenchmark.measureAddAllAndGrow      avgt   25  48_91589.453 ± 303555.972  ns/op
- * LinkedRobinHoodHashSetJmhBenchmark.measureClone              avgt   25  17_54426.236 ±  38308.059  ns/op
- * LinkedRobinHoodHashSetJmhBenchmark.measureCloneAndRemoveAll  avgt   25  46_64801.262 ±  90092.910  ns/op
- * LinkedRobinHoodHashSetJmhBenchmark.measureRemoveAdd          avgt   25      108.496 ±      5.206  ns/op
- * LinkedRobinHoodHashSetJmhBenchmark.measureSuccessfulGet      avgt   25       10.054 ±      0.070  ns/op
- * LinkedRobinHoodHashSetJmhBenchmark.measureUnsuccessfulGet    avgt   25        9.239 ±      0.481  ns/op
+ * LinkedRobinHoodHashSetJmhBenchmark.measureAddAll             avgt    2  2648074.354          ns/op
+ * LinkedRobinHoodHashSetJmhBenchmark.measureAddAllAndGrow      avgt    2  4538952.170          ns/op
+ * LinkedRobinHoodHashSetJmhBenchmark.measureClone              avgt    2  2348282.888          ns/op
+ * LinkedRobinHoodHashSetJmhBenchmark.measureCloneAndRemoveAll  avgt    2  6156654.113          ns/op
+ * LinkedRobinHoodHashSetJmhBenchmark.measureRemoveAdd          avgt    2      142.222          ns/op
+ * LinkedRobinHoodHashSetJmhBenchmark.measureSuccessfulGet      avgt    2       15.949          ns/op
+ * LinkedRobinHoodHashSetJmhBenchmark.measureUnsuccessfulGet    avgt    2       24.237          ns/op
  *
- * LinkedRobinHoodHashSet capacity:400000
- * LinkedRobinHoodHashSet fillRatio:0.25
+ * LinkedRobinHoodHashSet capacity:200000
+ * LinkedRobinHoodHashSet fillRatio:0.5
  * LinkedRobinHoodHashSet loadFactor:0.5
- * LinkedRobinHoodHashSet costStats:IntSummaryStatistics{count=100000, sum=8707, min=0, average=0.087070, max=3}
+ * LinkedRobinHoodHashSet costStats:IntSummaryStatistics{count=100000, sum=34303, min=0, average=0.343030, max=7}
  * </pre>
  */
+@Fork(value = 1, jvmArgsAppend = {})
+@Measurement(iterations = 2)
+@Warmup(iterations = 2)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @BenchmarkMode(Mode.AverageTime)
 public class LinkedRobinHoodHashSetJmhBenchmark {
@@ -57,7 +63,7 @@ public class LinkedRobinHoodHashSetJmhBenchmark {
     @Benchmark
     public void measureAddAllAndGrow() {
         LinkedRobinHoodHashSet<BenchmarkDataSet.Key> set = new LinkedRobinHoodHashSet<>(
-                16,
+                0,
                 0.5f);
         for (BenchmarkDataSet.Key v : DATA_SET.valuesInSet) {
             set.add(v);

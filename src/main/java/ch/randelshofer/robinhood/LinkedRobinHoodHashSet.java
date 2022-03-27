@@ -19,7 +19,8 @@ import static ch.randelshofer.robinhood.RangeAlgorithms.fastRange;
  *     were added to the set.</li>
  * </ul>
  */
-public class LinkedRobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet<E> {
+public class LinkedRobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet<E>
+        implements SequencedCollection<E> {
     private Entry<E> first, last;
     private Entry<E>[] table;
 
@@ -63,6 +64,42 @@ public class LinkedRobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet<E
         table = (Entry<E>[]) new Entry[capacity];
     }
 
+    @Override
+    public E getFirst() {
+        if (isEmpty()) {
+            throw new NoSuchElementException();
+        }
+        return first.element;
+    }
+
+    @Override
+    public E getLast() {
+        if (isEmpty()) {
+            throw new NoSuchElementException();
+        }
+        return last.element;
+    }
+
+    @Override
+    public E removeFirst() {
+        if (isEmpty()) {
+            throw new NoSuchElementException();
+        }
+        E e = first.element;
+        remove(e);
+        return e;
+    }
+
+    @Override
+    public E removeLast() {
+        if (isEmpty()) {
+            throw new NoSuchElementException();
+        }
+        E e = last.element;
+        remove(e);
+        return e;
+    }
+
 
     @Override
     protected E getKeyFromTable(int index) {
@@ -97,7 +134,7 @@ public class LinkedRobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet<E
             public E next() {
                 if (hasNext()) {
                     E element = current.element;
-                    last=current;
+                    last = current;
                     current = current.next;
                     return element;
                 }
@@ -109,11 +146,11 @@ public class LinkedRobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet<E
                 if (mod != modCount) {
                     throw new ConcurrentModificationException();
                 }
-                if (last== null) {
+                if (last == null) {
                     throw new IllegalStateException();
                 }
                 LinkedRobinHoodHashSet.this.remove(last.element);
-                last=null;
+                last = null;
                 mod = modCount;
             }
         }
@@ -123,12 +160,12 @@ public class LinkedRobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet<E
     protected void resize(int newCapacity) {
         computeThreshold(newCapacity);
         createTable(newCapacity);
-        for (Entry<E> current=first;current!=null;current=current.next){
+        for (Entry<E> current = first; current != null; current = current.next) {
             final E o = current.element;
             int result = find(o, hash(o, newCapacity));
             var index = -result - 1;
             shiftForInsertion(index);
-            table[index] =current;
+            table[index] = current;
         }
     }
 
@@ -171,7 +208,7 @@ public class LinkedRobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet<E
         table[index] = null;
     }
 
-   private static class Entry<E> {
+    private static class Entry<E> {
 
         private final E element;
         private Entry<E> next, prev;

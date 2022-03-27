@@ -10,8 +10,6 @@ import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Consumer;
 
-import static java.lang.Math.max;
-
 /**
  * Robin Hood Hash Set.
  */
@@ -47,9 +45,11 @@ abstract class AbstractRobinHoodHashSet<E> extends AbstractRobinHoodHashing<E> i
     }
 
     protected void clear() {
-        clearTable();
-        size = 0;
-        modCount++;
+        if (size != 0) {
+            clearTable();
+            size = 0;
+            modCount++;
+        }
     }
 
     protected abstract void clearTable();
@@ -120,21 +120,6 @@ abstract class AbstractRobinHoodHashSet<E> extends AbstractRobinHoodHashing<E> i
         return h;
     }
 
-    @SuppressWarnings("unchecked")
-    protected void resize(int newCapacity) {
-        Object[] objects = toArray();
-        computeThreshold(newCapacity);
-        createTable(newCapacity);
-        for (Object o : objects) {
-            @SuppressWarnings("RedundantExplicitVariableType") E e = (E) o;
-            int result = find(o, hash(o, newCapacity));
-            var index = -result - 1;
-            shiftForInsertion(index);
-            setKeyInTable(index, e);
-        }
-    }
-
-
     public Iterator<E> iterator() {
         class SetIterator implements Iterator<E> {
             int mod = modCount;
@@ -191,11 +176,10 @@ abstract class AbstractRobinHoodHashSet<E> extends AbstractRobinHoodHashing<E> i
      */
     protected boolean remove(Object o) {
         var h = hash(o, capacity);
-        var result = find(o, h);
-        if (result < 0) {
+        var index = find(o, h);
+        if (index < 0) {
             return false;
         } else {
-            var index = result;
             unsetTable(index);
             size--;
             modCount++;// must be done before shift, because debugger may advance iterator
@@ -204,17 +188,22 @@ abstract class AbstractRobinHoodHashSet<E> extends AbstractRobinHoodHashing<E> i
         }
     }
 
+    @SuppressWarnings("unchecked")
+    protected void resize(int newCapacity) {
+        Object[] objects = toArray();
+        computeThreshold(newCapacity);
+        createTable(newCapacity);
+        for (Object o : objects) {
+            @SuppressWarnings("RedundantExplicitVariableType") E e = (E) o;
+            int result = find(o, hash(o, newCapacity));
+            var index = -result - 1;
+            shiftForInsertion(index);
+            setKeyInTable(index, e);
+        }
+    }
 
     protected abstract void shiftForRemoval(int index);
 
-
-    public void sizeToFit(float fillRatio) {
-        if (size == 0) {
-            resize(0);
-        } else {
-            resize(max((int) (size / fillRatio), size));
-        }
-    }
 
     public Spliterator<E> spliterator() {
         class SetSpliterator extends Spliterators.AbstractSpliterator<E> {

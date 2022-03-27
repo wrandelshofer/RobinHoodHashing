@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
 
+import static java.lang.Math.max;
+
 /**
  * Extends {@link AbstractRobinHoodHashSet} with the API from the {@link Set}
  * interface.
@@ -25,7 +27,7 @@ public abstract class AbstractMutableRobinHoodHashSet<E> extends AbstractRobinHo
     }
 
     public AbstractMutableRobinHoodHashSet(Collection<? extends E> c) {
-        this(c,c.size()*4,0.5f);
+        this(c, c.size() * 2, 0.5f);
     }
 
     public AbstractMutableRobinHoodHashSet(Collection<? extends E> c, int initialCapacity, float loadFactor) {
@@ -39,8 +41,6 @@ public abstract class AbstractMutableRobinHoodHashSet<E> extends AbstractRobinHo
     public boolean add(E e) {
         return super.add(e);
     }
-
-
 
     @Override
     public boolean remove(Object o) {
@@ -88,6 +88,16 @@ public abstract class AbstractMutableRobinHoodHashSet<E> extends AbstractRobinHo
 
     @Override
     public void clear() {
-         super.clear();
+        super.clear();
+    }
+
+    public void sizeToFit(float fillRatio) {
+        if (size == 0) {
+            capacity = 0;
+            resize(0);
+        } else {
+            capacity = roundCapacity(max((int) (size / fillRatio), size));
+            resize(capacity);
+        }
     }
 }

@@ -2,8 +2,11 @@ package ch.randelshofer.robinhood;
 
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Warmup;
 
 import java.util.concurrent.TimeUnit;
 
@@ -14,26 +17,28 @@ import java.util.concurrent.TimeUnit;
  * # Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz
  *
  * Benchmark                                                      Mode  Cnt        Score       Error  Units
- * IdentityRobinHoodHashSetJmhBenchmark.measureAddAll             avgt   25  19_23601.464 ± 77940.241  ns/op
- * IdentityRobinHoodHashSetJmhBenchmark.measureAddAllAndGrow      avgt   25  71_24312.791 ± 97971.171  ns/op
- * IdentityRobinHoodHashSetJmhBenchmark.measureClone              avgt   25     86615.205 ±   683.388  ns/op
- * IdentityRobinHoodHashSetJmhBenchmark.measureCloneAndRemoveAll  avgt   15  61_43186.776 ± 50804.304  ns/op
- * IdentityRobinHoodHashSetJmhBenchmark.measureRemoveAdd          avgt   25        66.180 ±     1.816  ns/op
- * IdentityRobinHoodHashSetJmhBenchmark.measureSuccessfulGet      avgt   25        12.066 ±     0.060  ns/op
- * IdentityRobinHoodHashSetJmhBenchmark.measureUnsuccessfulGet    avgt   25        18.870 ±     0.936  ns/op
+ * IdentityRobinHoodHashSetJmhBenchmark.measureAddAll             avgt    2  1678617.788          ns/op
+ * IdentityRobinHoodHashSetJmhBenchmark.measureAddAllAndGrow      avgt    2  5043434.842          ns/op
+ * IdentityRobinHoodHashSetJmhBenchmark.measureClone              avgt    2    71799.364          ns/op
+ * IdentityRobinHoodHashSetJmhBenchmark.measureCloneAndRemoveAll  avgt    2  2148396.884          ns/op
+ * IdentityRobinHoodHashSetJmhBenchmark.measureRemoveAdd          avgt    2       46.323          ns/op
+ * IdentityRobinHoodHashSetJmhBenchmark.measureSuccessfulGet      avgt    2        9.600          ns/op
+ * IdentityRobinHoodHashSetJmhBenchmark.measureUnsuccessfulGet    avgt    2       14.943          ns/op
  *
- * IdentityRobinHoodHashSet size:100000
- * IdentityRobinHoodHashSet capacity:300000
- * IdentityRobinHoodHashSet fillRatio:0.33333334
- * IdentityRobinHoodHashSet loadFactor:0.33333334
- * IdentityRobinHoodHashSet costStats:IntSummaryStatistics{count=100000, sum=24989, min=0, average=0.249890, max=6}
+ * IdentityRobinHoodHashSet capacity:262144
+ * IdentityRobinHoodHashSet fillRatio:0.38146973
+ * IdentityRobinHoodHashSet loadFactor:0.5
+ * IdentityRobinHoodHashSet costStats:IntSummaryStatistics{count=100000, sum=30402, min=0, average=0.304020, max=6}
  * </pre>
  */
+@Fork(value = 1, jvmArgsAppend = {})
+@Measurement(iterations = 2)
+@Warmup(iterations = 2)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @BenchmarkMode(Mode.AverageTime)
 public class IdentityRobinHoodHashSetJmhBenchmark  {
     private static int index;
-    private static BenchmarkDataSet DATA_SET = new BenchmarkDataSet(100_000, 0, 500_000, -1);
+    private final static BenchmarkDataSet DATA_SET = new BenchmarkDataSet(100_000, 0, 500_000, -1);
 
 
     private static final IdentityRobinHoodHashSet<BenchmarkDataSet.Key> CONSTANT_SET = new IdentityRobinHoodHashSet<>(DATA_SET.constantIdentitySet);
@@ -48,7 +53,7 @@ public class IdentityRobinHoodHashSetJmhBenchmark  {
     @Benchmark
     public void measureAddAll() {
         IdentityRobinHoodHashSet<BenchmarkDataSet.Key> set = new IdentityRobinHoodHashSet<>(
-                DATA_SET.constantIdentitySet.size()*3,                0.5f);
+                DATA_SET.constantIdentitySet.size() * 2, 0.5f);
         for (BenchmarkDataSet.Key v : DATA_SET.valuesInSet) {
             set.add(v);
         }
@@ -57,7 +62,7 @@ public class IdentityRobinHoodHashSetJmhBenchmark  {
     @Benchmark
     public void measureAddAllAndGrow() {
         IdentityRobinHoodHashSet<BenchmarkDataSet.Key> set = new IdentityRobinHoodHashSet<>(
-                16,
+                0,
                 0.5f);
         for (BenchmarkDataSet.Key v : DATA_SET.valuesInSet) {
             set.add(v);

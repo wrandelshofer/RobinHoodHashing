@@ -2,8 +2,11 @@ package ch.randelshofer.robinhood;
 
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Warmup;
 
 import java.util.LinkedHashSet;
 import java.util.concurrent.TimeUnit;
@@ -24,6 +27,9 @@ import java.util.concurrent.TimeUnit;
  * LinkedHashSetJmhBenchmark.measureUnsuccessfulGet    avgt   25        10.310 ±      0.048  ns/op
  * </pre>
  */
+@Fork(value = 1, jvmArgsAppend = {})
+@Measurement(iterations = 2)
+@Warmup(iterations = 2)
 @SuppressWarnings({"unchecked", "UseBulkOperation"})
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @BenchmarkMode(Mode.AverageTime)
@@ -48,7 +54,7 @@ public class LinkedHashSetJmhBenchmark {
     @Benchmark
     public void measureAddAllAndGrow() {
         LinkedHashSet<BenchmarkDataSet.Key> set = new LinkedHashSet<>(
-                16,
+                0,
                 0.75f);
         for (BenchmarkDataSet.Key v : DATA_SET.valuesInSet) {
             set.add(v);
