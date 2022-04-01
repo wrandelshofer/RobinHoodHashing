@@ -11,6 +11,59 @@ import java.util.Spliterator;
 import java.util.function.Consumer;
 
 public abstract class AbstractMutableRobinHoodHashMap<K, V> extends AbstractRobinHoodHashMap<K, V> implements Map<K, V> {
+    public AbstractMutableRobinHoodHashMap() {
+    }
+
+    public AbstractMutableRobinHoodHashMap(int initialCapacity) {
+        super(initialCapacity);
+    }
+
+    public AbstractMutableRobinHoodHashMap(int initialCapacity, float loadFactor) {
+        super(initialCapacity, loadFactor);
+    }
+
+    @Override
+    public void clear() {
+        super.clear();
+    }
+
+    @Override
+    public Set<Entry<K, V>> entrySet() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public V get(Object key) {
+        return super.get(key);
+    }
+
+    @Override
+    public Set<K> keySet() {
+        return new KeySet();
+    }
+
+    @Override
+    public V put(K key, V value) {
+        return super.put(key, value);
+    }
+
+    @Override
+    public void putAll(Map<? extends K, ? extends V> m) {
+        for (Entry<? extends K, ? extends V> entry : m.entrySet()) {
+            put(entry.getKey(), entry.getValue());
+        }
+    }
+
+    @Override
+    public V remove(Object key) {
+        return super.remove(key);
+    }
+
+    @Override
+    public Collection<V> values() {
+        throw new UnsupportedOperationException();
+    }
+
     private class MapIterator {
         int mod = modCount;
         int index = 0;
@@ -60,45 +113,32 @@ public abstract class AbstractMutableRobinHoodHashMap<K, V> extends AbstractRobi
         }
     }
 
-    public AbstractMutableRobinHoodHashMap() {
-    }
-
-    public AbstractMutableRobinHoodHashMap(int initialCapacity) {
-        super(initialCapacity);
-    }
-
-    public AbstractMutableRobinHoodHashMap(int initialCapacity, float loadFactor) {
-        super(initialCapacity, loadFactor);
-    }
-
-    private Set<K> keySet = null;
-
     final class KeySet extends AbstractSet<K> {
-        public final int size() {
-            return size;
-        }
-
-        public final void clear() {
+        public void clear() {
             AbstractMutableRobinHoodHashMap.this.clear();
         }
 
-        public final Iterator<K> iterator() {
-            return new KeySetIterator();
-        }
-
-        public final boolean contains(Object o) {
+        public boolean contains(Object o) {
             return containsKey(o);
         }
 
-        public final boolean remove(Object key) {
-            return AbstractMutableRobinHoodHashMap.this.remove(key) != null;
-        }
-
-        public final Spliterator<K> spliterator() {
+        public void forEach(Consumer<? super K> action) {
             throw new UnsupportedOperationException();
         }
 
-        public Object[] toArray() {
+        public Iterator<K> iterator() {
+            return new KeySetIterator();
+        }
+
+        public boolean remove(Object key) {
+            return AbstractMutableRobinHoodHashMap.this.remove(key) != null;
+        }
+
+        public int size() {
+            return size;
+        }
+
+        public Spliterator<K> spliterator() {
             throw new UnsupportedOperationException();
         }
 
@@ -106,64 +146,8 @@ public abstract class AbstractMutableRobinHoodHashMap<K, V> extends AbstractRobi
             throw new UnsupportedOperationException();
         }
 
-        public final void forEach(Consumer<? super K> action) {
+        public Object[] toArray() {
             throw new UnsupportedOperationException();
         }
     }
-
-    @Override
-    public void clear() {
-        super.clear();
-    }
-
-    @Override
-    public V put(K key, V value) {
-        return super.put(key, value);
-    }
-
-    @Override
-    public Set<K> keySet() {
-        if (keySet == null) {
-            keySet = new KeySet();
-        }
-        return keySet;
-    }
-
-    @Override
-    public V get(Object key) {
-        return super.get(key);
-    }
-
-    @Override
-    public V remove(Object key) {
-        return super.remove(key);
-    }
-
-    @Override
-    public void putAll(Map<? extends K, ? extends V> m) {
-        for (Entry<? extends K, ? extends V> entry : m.entrySet()) {
-            put(entry.getKey(), entry.getValue());
-        }
-    }
-
-
-    @Override
-    public Collection<V> values() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Set<Entry<K, V>> entrySet() {
-        throw new UnsupportedOperationException();
-    }
-
-
-    @Override
-    protected AbstractMutableRobinHoodHashMap clone() {
-        @SuppressWarnings("unchecked")
-        var that = (AbstractMutableRobinHoodHashMap) super.clone();
-        that.keySet = null;
-        return that;
-    }
-
 }

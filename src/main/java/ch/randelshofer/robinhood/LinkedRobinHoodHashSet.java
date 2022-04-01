@@ -50,12 +50,21 @@ public class LinkedRobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet<E
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public LinkedRobinHoodHashSet<E> clone() {
-        LinkedRobinHoodHashSet<E> that = new LinkedRobinHoodHashSet<>(this.getCapacity(), this.getLoadFactor());
-        for (Iterator<E> it = iterator(); it.hasNext(); ) {
-            that.add(it.next());
+        try {
+            LinkedRobinHoodHashSet<E> that = (LinkedRobinHoodHashSet<E>) super.clone();
+
+            that.table = new Entry[this.table.length];
+            that.first = that.last = null;
+            that.size = 0;
+            for (Iterator<E> it = iterator(); it.hasNext(); ) {
+                that.add(it.next());
+            }
+            return that;
+        } catch (CloneNotSupportedException e) {
+            throw new InternalError(e);
         }
-        return that;
     }
 
     @SuppressWarnings("unchecked")

@@ -15,7 +15,8 @@ import static ch.randelshofer.robinhood.RangeAlgorithms.fastRange;
  *     <li>Iteration order is not guaranteed.</li>
  * </ul>
  */
-public class RobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet<E> {
+public class RobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet<E>
+        implements Cloneable {
 
     private Object[] table;
 
@@ -46,9 +47,13 @@ public class RobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet<E> {
 
     @Override
     public RobinHoodHashSet<E> clone() {
-        RobinHoodHashSet<E> that = (RobinHoodHashSet<E>) super.clone();
-        that.table = this.table.clone();
-        return that;
+        try {
+            RobinHoodHashSet<E> that = (RobinHoodHashSet<E>) super.clone();
+            that.table = this.table.clone();
+            return that;
+        } catch (CloneNotSupportedException e) {
+            throw new InternalError(e);
+        }
     }
 
     @Override

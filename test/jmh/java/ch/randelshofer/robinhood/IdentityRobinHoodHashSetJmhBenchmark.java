@@ -16,14 +16,14 @@ import java.util.concurrent.TimeUnit;
  * # VM version: JDK 17, OpenJDK 64-Bit Server VM, 17+35-2724
  * # Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz
  *
- * Benchmark                                                      Mode  Cnt        Score       Error  Units
- * IdentityRobinHoodHashSetJmhBenchmark.measureAddAll             avgt    2  1678617.788          ns/op
- * IdentityRobinHoodHashSetJmhBenchmark.measureAddAllAndGrow      avgt    2  5043434.842          ns/op
- * IdentityRobinHoodHashSetJmhBenchmark.measureClone              avgt    2    71799.364          ns/op
- * IdentityRobinHoodHashSetJmhBenchmark.measureCloneAndRemoveAll  avgt    2  2148396.884          ns/op
- * IdentityRobinHoodHashSetJmhBenchmark.measureRemoveAdd          avgt    2       46.323          ns/op
- * IdentityRobinHoodHashSetJmhBenchmark.measureSuccessfulGet      avgt    2        9.600          ns/op
- * IdentityRobinHoodHashSetJmhBenchmark.measureUnsuccessfulGet    avgt    2       14.943          ns/op
+ * Benchmark                                                      Mode  Cnt         Score       Error  Units
+ * IdentityRobinHoodHashSetJmhBenchmark.measureAddAll             avgt    2  16_78617.788          ns/op
+ * IdentityRobinHoodHashSetJmhBenchmark.measureAddAllAndGrow      avgt    2  50_43434.842          ns/op
+ * IdentityRobinHoodHashSetJmhBenchmark.measureClone              avgt    2    _71799.364          ns/op
+ * IdentityRobinHoodHashSetJmhBenchmark.measureCloneAndRemoveAll  avgt    2  21_48396.884          ns/op
+ * IdentityRobinHoodHashSetJmhBenchmark.measureRemoveAdd          avgt    2        46.323          ns/op
+ * IdentityRobinHoodHashSetJmhBenchmark.measureSuccessfulGet      avgt    2         9.600          ns/op
+ * IdentityRobinHoodHashSetJmhBenchmark.measureUnsuccessfulGet    avgt    2        14.943          ns/op
  *
  * IdentityRobinHoodHashSet capacity:262144
  * IdentityRobinHoodHashSet fillRatio:0.38146973

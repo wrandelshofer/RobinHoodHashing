@@ -115,10 +115,4 @@ public abstract class AbstractRobinHoodHashMap<K, V> extends AbstractRobinHoodHa
 
     protected abstract void clearTable();
 
-    @Override
-    protected AbstractRobinHoodHashMap<K, V> clone() {
-        @SuppressWarnings("unchecked")
-        var that = (AbstractRobinHoodHashMap<K, V>) super.clone();
-        return that;
-    }
 }

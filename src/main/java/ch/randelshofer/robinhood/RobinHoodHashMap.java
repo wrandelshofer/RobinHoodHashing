@@ -43,10 +43,14 @@ public class RobinHoodHashMap<K, V> extends AbstractMutableRobinHoodHashMap<K, V
 
     @Override
     protected RobinHoodHashMap<K, V> clone() {
-        @SuppressWarnings("unchecked")
-        var that = (RobinHoodHashMap<K, V>) super.clone();
-        that.table = this.table.clone();
-        return that;
+        try {
+            @SuppressWarnings("unchecked")
+            RobinHoodHashMap<K, V> that = (RobinHoodHashMap<K, V>) super.clone();
+            that.table = this.table.clone();
+            return that;
+        } catch (CloneNotSupportedException e) {
+            throw new InternalError(e);
+        }
     }
 
     @Override

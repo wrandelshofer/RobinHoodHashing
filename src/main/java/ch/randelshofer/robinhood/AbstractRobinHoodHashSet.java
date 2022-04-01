@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 /**
  * Robin Hood Hash Set.
  */
-abstract class AbstractRobinHoodHashSet<E> extends AbstractRobinHoodHashing<E> implements Cloneable, Iterable<E> {
+abstract class AbstractRobinHoodHashSet<E> extends AbstractRobinHoodHashing<E> implements Iterable<E> {
     public AbstractRobinHoodHashSet() {
         super();
     }
@@ -53,13 +53,6 @@ abstract class AbstractRobinHoodHashSet<E> extends AbstractRobinHoodHashing<E> i
     }
 
     protected abstract void clearTable();
-
-    @Override
-    protected AbstractRobinHoodHashSet<E> clone() {
-        @SuppressWarnings("unchecked")
-        var that = (AbstractRobinHoodHashSet<E>) super.clone();
-        return that;
-    }
 
 
     public boolean contains(Object o) {

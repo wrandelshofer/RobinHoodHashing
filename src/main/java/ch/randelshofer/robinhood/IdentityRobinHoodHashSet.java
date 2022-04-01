@@ -15,7 +15,8 @@ import static ch.randelshofer.robinhood.RangeAlgorithms.roundUpToPowerOf2;
  *     <li>Iteration order is not guaranteed.</li>
  * </ul>
  */
-public class IdentityRobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet<E> {
+public class IdentityRobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet<E>
+        implements Cloneable {
     private Object[] table;
 
     public IdentityRobinHoodHashSet() {
@@ -41,13 +42,6 @@ public class IdentityRobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet
     @Override
     protected void clearTable() {
         Arrays.fill(table, null);
-    }
-
-    @Override
-    public IdentityRobinHoodHashSet<E> clone() {
-        IdentityRobinHoodHashSet<E> that = (IdentityRobinHoodHashSet<E>) super.clone();
-        that.table = this.table.clone();
-        return that;
     }
 
     @Override
@@ -93,5 +87,16 @@ public class IdentityRobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet
     @Override
     protected void unsetTable(int index) {
         table[index] = null;
+    }
+
+    @Override
+    public IdentityRobinHoodHashSet<E> clone() {
+        try {
+            @SuppressWarnings("unchecked") final IdentityRobinHoodHashSet<E> that = (IdentityRobinHoodHashSet<E>) super.clone();
+            that.table = this.table.clone();
+            return that;
+        } catch (CloneNotSupportedException e) {
+            throw new InternalError(e);
+        }
     }
 }

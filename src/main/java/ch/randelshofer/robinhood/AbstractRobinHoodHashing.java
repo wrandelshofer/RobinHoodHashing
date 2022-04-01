@@ -328,16 +328,5 @@ public abstract class AbstractRobinHoodHashing<E> implements Cloneable {
     protected abstract void setKeyInTable(int index, E e);
 
 
-    @Override
-    protected AbstractRobinHoodHashing clone() {
-        try {
-            @SuppressWarnings("unchecked")
-            var that = (AbstractRobinHoodHashing) super.clone();
-            return that;
-        } catch (CloneNotSupportedException e) {
-            // this shouldn't happen, since we are Cloneable
-            throw new InternalError(e);
-        }
-    }
 
 }
