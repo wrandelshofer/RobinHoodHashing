@@ -3,6 +3,8 @@ package ch.randelshofer.robinhood;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Objects;
+import java.util.Spliterator;
 
 import static ch.randelshofer.robinhood.AvalancheAlgorithms.goldenRatioAvalanche;
 import static ch.randelshofer.robinhood.RangeAlgorithms.fastRange;
@@ -13,6 +15,7 @@ import static ch.randelshofer.robinhood.RangeAlgorithms.fastRange;
  *     <li>Elements are distinguished by their {@link Object#equals} method,
  *     and are hashed using their {@link Object#hashCode} method.</li>
  *     <li>Iteration order is not guaranteed.</li>
+ *     <li>Null values are not allowed.</li>
  * </ul>
  */
 public class RobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet<E>
@@ -69,11 +72,11 @@ public class RobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet<E>
 
     @Override
     protected int hash(Object e, int length) {
-        return fastRange(goldenRatioAvalanche(e.hashCode()), length);
+        return fastRange(goldenRatioAvalanche(Objects.hashCode(e)), length);
     }
 
     protected boolean isEqual(Object a, Object b) {
-        return a.equals(b);
+        return Objects.equals(a, b);
     }
 
     @Override
@@ -94,5 +97,9 @@ public class RobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet<E>
     @Override
     protected void unsetTable(int index) {
         table[index] = null;
+    }
+
+    public Spliterator<E> spliterator() {
+        return new SetSpliterator(0, capacity);
     }
 }

@@ -1,14 +1,14 @@
 package ch.randelshofer.robinhood;
 
+import java.util.AbstractCollection;
+import java.util.AbstractMap;
 import java.util.AbstractSet;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Set;
-import java.util.Spliterator;
-import java.util.function.Consumer;
 
 public abstract class AbstractMutableRobinHoodHashMap<K, V> extends AbstractRobinHoodHashMap<K, V> implements Map<K, V> {
     public AbstractMutableRobinHoodHashMap() {
@@ -29,7 +29,7 @@ public abstract class AbstractMutableRobinHoodHashMap<K, V> extends AbstractRobi
 
     @Override
     public Set<Entry<K, V>> entrySet() {
-        throw new UnsupportedOperationException();
+        return new MutableEntrySet();
     }
 
     @Override
@@ -39,7 +39,7 @@ public abstract class AbstractMutableRobinHoodHashMap<K, V> extends AbstractRobi
 
     @Override
     public Set<K> keySet() {
-        return new KeySet();
+        return new MutableKeySet();
     }
 
     @Override
@@ -61,59 +61,67 @@ public abstract class AbstractMutableRobinHoodHashMap<K, V> extends AbstractRobi
 
     @Override
     public Collection<V> values() {
-        throw new UnsupportedOperationException();
+        return new MutableValueCollection();
     }
 
-    private class MapIterator {
-        int mod = modCount;
-        int index = 0;
-        int remaining = size;
-        K currentKey = null;
-
-        public boolean hasNext() {
-            if (mod != modCount) {
-                throw new ConcurrentModificationException();
-            }
-            return remaining > 0;
-        }
-
-        protected K move() {
-            if (hasNext()) {
-                int maxIter = capacity;
-                do {
-                    currentKey = getKeyFromTable(index);
-                    index = index < capacity - 1 ? index + 1 : 0;
-                    --maxIter;
-                } while (currentKey == null && maxIter > 0);
-                remaining--;
-                return currentKey;
-            }
-            throw new NoSuchElementException();
-        }
+    private class MutableMapIterator extends ReadOnlyMapIterator {
 
         public void remove() {
             if (mod != modCount) {
                 throw new ConcurrentModificationException();
             }
-            if (currentKey == null) {
+            if (currentEntry == null) {
                 throw new IllegalStateException();
             }
             // We cannot shrink the table, because this would reorganize
             // the table.
-            AbstractMutableRobinHoodHashMap.this.remove(currentKey);
-            currentKey = null;
+            AbstractMutableRobinHoodHashMap.this.remove(currentEntry.getKey());
+            currentEntry = null;
             mod = modCount;
         }
     }
 
-    private class KeySetIterator extends MapIterator implements Iterator<K> {
+    private class MutableKeySetIterator extends MutableMapIterator implements Iterator<K> {
         @Override
         public K next() {
-            return move();
+            return move().getKey();
         }
     }
 
-    final class KeySet extends AbstractSet<K> {
+    private class MutableValuesIterator extends MutableMapIterator implements Iterator<V> {
+        @Override
+        public V next() {
+            return move().getValue();
+        }
+    }
+
+    private class MutableEntrySetIterator extends MutableMapIterator implements Iterator<Map.Entry<K, V>> {
+        @Override
+        public Map.Entry<K, V> next() {
+            return move();
+        }
+
+        @Override
+        protected Entry<K, V> createEntry(K k, V v) {
+            return new MutableEntry(k, v);
+        }
+    }
+
+    private class MutableEntry extends AbstractMap.SimpleEntry<K, V> {
+
+        public MutableEntry(K key, V value) {
+            super(key, value);
+        }
+
+        @Override
+        public V setValue(V value) {
+            V oldValue = super.setValue(value);
+            put(getKey(), value);
+            return oldValue;
+        }
+    }
+
+    final class MutableKeySet extends AbstractSet<K> {
         public void clear() {
             AbstractMutableRobinHoodHashMap.this.clear();
         }
@@ -122,12 +130,8 @@ public abstract class AbstractMutableRobinHoodHashMap<K, V> extends AbstractRobi
             return containsKey(o);
         }
 
-        public void forEach(Consumer<? super K> action) {
-            throw new UnsupportedOperationException();
-        }
-
         public Iterator<K> iterator() {
-            return new KeySetIterator();
+            return new MutableKeySetIterator();
         }
 
         public boolean remove(Object key) {
@@ -137,17 +141,85 @@ public abstract class AbstractMutableRobinHoodHashMap<K, V> extends AbstractRobi
         public int size() {
             return size;
         }
+    }
 
-        public Spliterator<K> spliterator() {
-            throw new UnsupportedOperationException();
+    final class MutableValueCollection extends AbstractCollection<V> {
+        public void clear() {
+            AbstractMutableRobinHoodHashMap.this.clear();
         }
 
-        public <T> T[] toArray(T[] a) {
-            throw new UnsupportedOperationException();
+        public boolean contains(Object o) {
+            return containsValue(o);
         }
 
-        public Object[] toArray() {
-            throw new UnsupportedOperationException();
+        public Iterator<V> iterator() {
+            return new MutableValuesIterator();
+        }
+
+        public int size() {
+            return size;
         }
     }
+
+    final class MutableEntrySet extends AbstractSet<Entry<K, V>> {
+
+        @Override
+        public void clear() {
+            AbstractMutableRobinHoodHashMap.this.clear();
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public boolean contains(Object o) {
+            if (!(o instanceof Entry)) {
+                return false;
+            }
+            Entry<K, V> e = (Entry<K, V>) o;
+            return AbstractMutableRobinHoodHashMap.this.containsKey(e.getKey())
+                    && Objects.equals(AbstractMutableRobinHoodHashMap.this.get(e.getKey()), e.getValue());
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return AbstractMutableRobinHoodHashMap.this.isEmpty();
+        }
+
+        @Override
+        public Iterator<Entry<K, V>> iterator() {
+            return new MutableEntrySetIterator();
+        }
+
+        /**
+         * @Override public boolean add(Entry<K, V> e) {
+         * boolean added = !AbstractMutableRobinHoodHashMap.this.containsKey(e.getKey())
+         * || Objects.equals(AbstractMutableRobinHoodHashMap.this.get(e.getKey()), e.getValue());
+         * if (added) {
+         * AbstractMutableRobinHoodHashMap.this.put(e.getKey(), e.getValue());
+         * }
+         * return added;
+         * }
+         */
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public boolean remove(Object o) {
+            if (!(o instanceof Entry)) {
+                return false;
+            }
+            Entry<K, V> e = (Entry<K, V>) o;
+            boolean removed = AbstractMutableRobinHoodHashMap.this.containsKey(e.getKey())
+                    && Objects.equals(AbstractMutableRobinHoodHashMap.this.get(e.getKey()), e.getValue());
+            if (removed) {
+                AbstractMutableRobinHoodHashMap.this.remove(e.getKey());
+            }
+            return removed;
+        }
+
+        @Override
+        public int size() {
+            return AbstractMutableRobinHoodHashMap.this.size();
+        }
+
+    }
+
 }

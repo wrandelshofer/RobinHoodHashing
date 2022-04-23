@@ -1,6 +1,7 @@
 package ch.randelshofer.robinhood;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 
@@ -25,11 +26,19 @@ public class RobinHoodHashMap<K, V> extends AbstractMutableRobinHoodHashMap<K, V
         this(m, (int) (m.size() / loadFactor), loadFactor);
     }
 
-    public RobinHoodHashMap(Map<? extends K, ? extends V> m, int initialCapacity, float loadFactor) {
+    public RobinHoodHashMap(Collection<? extends Entry<? extends K, ? extends V>> entries, int initialCapacity, float loadFactor) {
         super(initialCapacity, loadFactor);
-        for (Entry<? extends K, ? extends V> entry : m.entrySet()) {
+        for (Entry<? extends K, ? extends V> entry : entries) {
             put(entry.getKey(), entry.getValue());
         }
+    }
+
+    public RobinHoodHashMap(Collection<? extends Entry<? extends K, ? extends V>> entries) {
+        this(entries, entries.size() * 2, 0.5f);
+    }
+
+    public RobinHoodHashMap(Map<? extends K, ? extends V> m, int initialCapacity, float loadFactor) {
+        this(m.entrySet(), initialCapacity, loadFactor);
     }
 
     public RobinHoodHashMap(Map<? extends K, ? extends V> m) {
@@ -42,7 +51,7 @@ public class RobinHoodHashMap<K, V> extends AbstractMutableRobinHoodHashMap<K, V
     }
 
     @Override
-    protected RobinHoodHashMap<K, V> clone() {
+    public RobinHoodHashMap<K, V> clone() {
         try {
             @SuppressWarnings("unchecked")
             RobinHoodHashMap<K, V> that = (RobinHoodHashMap<K, V>) super.clone();
@@ -72,7 +81,7 @@ public class RobinHoodHashMap<K, V> extends AbstractMutableRobinHoodHashMap<K, V
 
     @Override
     protected int hash(Object e, int length) {
-        return fastRange(goldenRatioAvalanche(e.hashCode()), length);
+        return fastRange(goldenRatioAvalanche(Objects.hashCode(e)), length);
     }
 
     @Override
@@ -86,8 +95,8 @@ public class RobinHoodHashMap<K, V> extends AbstractMutableRobinHoodHashMap<K, V
     }
 
     @Override
-    protected void setValueInTable(int index, V e) {
-        table[index * 2 + 1] = e;
+    protected void setValueInTable(int index, V value) {
+        table[index * 2 + 1] = value;
     }
 
     @Override
@@ -123,5 +132,4 @@ public class RobinHoodHashMap<K, V> extends AbstractMutableRobinHoodHashMap<K, V
         table[index * 2] = null;
         table[index * 2 + 1] = null;
     }
-
 }

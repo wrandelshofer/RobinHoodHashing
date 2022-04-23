@@ -1,7 +1,6 @@
 package ch.randelshofer.robinhood;
 
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
@@ -13,7 +12,7 @@ import static java.lang.Math.max;
  * interface.
  */
 public abstract class AbstractMutableRobinHoodHashSet<E> extends AbstractRobinHoodHashSet<E>
-        implements Set<E>, Serializable {
+        implements Set<E> {
     public AbstractMutableRobinHoodHashSet() {
         super();
     }

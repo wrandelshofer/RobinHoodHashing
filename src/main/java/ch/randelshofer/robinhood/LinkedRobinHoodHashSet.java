@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 import static ch.randelshofer.robinhood.AvalancheAlgorithms.goldenRatioAvalanche;
 import static ch.randelshofer.robinhood.RangeAlgorithms.fastRange;
@@ -17,12 +18,13 @@ import static ch.randelshofer.robinhood.RangeAlgorithms.fastRange;
  *     and are hashed using their {@link Object#hashCode} method.</li>
  *     <li>Iteration order is the same as the order in which elements
  *     were added to the set.</li>
+ *     <li>Does not allow null values.</li>
  * </ul>
  */
 public class LinkedRobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet<E>
         implements SequencedCollection<E> {
-    private Entry<E> first, last;
-    private Entry<E>[] table;
+    private transient Entry<E> first, last;
+    private transient Entry<E>[] table;
 
     public LinkedRobinHoodHashSet() {
     }
@@ -118,11 +120,11 @@ public class LinkedRobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet<E
 
     @Override
     protected int hash(Object e, int length) {
-        return fastRange(goldenRatioAvalanche(e.hashCode()), length);
+        return fastRange(goldenRatioAvalanche(Objects.hashCode(e)), length);
     }
 
     protected boolean isEqual(Object a, Object b) {
-        return a.equals(b);
+        return Objects.equals(a, b);
     }
 
     public Iterator<E> iterator() {
@@ -231,6 +233,46 @@ public class LinkedRobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet<E
             return "E{" +
                     element +
                     '}';
+        }
+    }
+
+
+    /**
+     * Serializes this instance.
+     *
+     * @serialData capacity (int),
+     * load factor (float),
+     * size (int),
+     * all elements of the set in order.
+     */
+    @java.io.Serial
+    private void writeObject(java.io.ObjectOutputStream s)
+            throws java.io.IOException {
+        // Write out any hidden serialization magic
+        s.defaultWriteObject();
+
+        // Write out all elements in the proper order.
+        for (E e : this)
+            s.writeObject(e);
+    }
+
+    /**
+     * Deserializes this instance.
+     */
+    @java.io.Serial
+    private void readObject(java.io.ObjectInputStream s)
+            throws java.io.IOException, ClassNotFoundException {
+        // Read in any hidden serialization magic
+        s.defaultReadObject();
+
+        // Read in all elements in the proper order.
+        int tempSize = size;
+        size = 0;
+        resize(capacity);
+        for (int i = 0; i < tempSize; i++) {
+            @SuppressWarnings("unchecked")
+            E e = (E) s.readObject();
+            add(e);
         }
     }
 }

@@ -1,8 +1,9 @@
 package ch.randelshofer.robinhood;
 
+import java.io.Serializable;
 import java.util.IntSummaryStatistics;
 
-public abstract class AbstractRobinHoodHashing<E> implements Cloneable {
+public abstract class AbstractRobinHoodHashing<E> implements Cloneable, Serializable {
     /**
      * The number of non-empty elements in the table.
      */
@@ -17,18 +18,18 @@ public abstract class AbstractRobinHoodHashing<E> implements Cloneable {
      * <p>
      * If this value is {@literal >= 1} the table will never grow.
      */
-    protected final float loadFactor;
+    protected float loadFactor;
 
     /**
      * Modification counter for detecting concurrent modification.
      */
     protected transient int modCount;
 
-
     /**
      * Invariant: maxLoad = clamp(table.length * maxLoadFactor, 0, table.length)
      */
     protected int threshold;
+
     /**
      * The capacity of the hash table.
      */
@@ -77,7 +78,7 @@ public abstract class AbstractRobinHoodHashing<E> implements Cloneable {
     protected abstract void createTable(int capacity);
 
 
-    protected float getLoadFactor() {
+    public float getLoadFactor() {
         return loadFactor;
     }
 

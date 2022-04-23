@@ -198,48 +198,45 @@ abstract class AbstractRobinHoodHashSet<E> extends AbstractRobinHoodHashing<E> i
     protected abstract void shiftForRemoval(int index);
 
 
-    public Spliterator<E> spliterator() {
-        class SetSpliterator extends Spliterators.AbstractSpliterator<E> {
-            private final int fence;
-            private final int expectedModCount;
-            private int index;
+    class SetSpliterator extends Spliterators.AbstractSpliterator<E> {
+        private final int fence;
+        private final int expectedModCount;
+        private int index;
 
-            protected SetSpliterator(int index, int fence) {
-                super(fence - index, DISTINCT);
-                this.index = index;
-                this.fence = fence;
-                this.expectedModCount = modCount;
-            }
-
-            @Override
-            public long estimateSize() {
-                return fence - index;
-            }
-
-            @Override
-            public boolean tryAdvance(Consumer<? super E> action) {
-                if (expectedModCount != modCount) {
-                    throw new ConcurrentModificationException();
-                }
-                while (index < fence && getKeyFromTable(index) == null) {
-                    index++;
-                }
-                if (index < fence) {
-                    action.accept(getKeyFromTable(index++));
-                    return true;
-                }
-                return false;
-            }
-
-            @Override
-            public Spliterator<E> trySplit() {
-                int lo = index, mid = (lo + fence) >>> 1;
-                return (lo >= mid)
-                        ? null
-                        : new SetSpliterator(lo, index = mid);
-            }
+        protected SetSpliterator(int index, int fence) {
+            super(fence - index, DISTINCT);
+            this.index = index;
+            this.fence = fence;
+            this.expectedModCount = modCount;
         }
-        return new SetSpliterator(0, capacity);
+
+        @Override
+        public long estimateSize() {
+            return fence - index;
+        }
+
+        @Override
+        public boolean tryAdvance(Consumer<? super E> action) {
+            if (expectedModCount != modCount) {
+                throw new ConcurrentModificationException();
+            }
+            while (index < fence && getKeyFromTable(index) == null) {
+                index++;
+            }
+            if (index < fence) {
+                action.accept(getKeyFromTable(index++));
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public Spliterator<E> trySplit() {
+            int lo = index, mid = (lo + fence) >>> 1;
+            return (lo >= mid)
+                    ? null
+                    : new SetSpliterator(lo, index = mid);
+        }
     }
 
     public Object[] toArray() {
@@ -261,6 +258,14 @@ abstract class AbstractRobinHoodHashSet<E> extends AbstractRobinHoodHashing<E> i
         for (var i = 0; i < size; i++) {
             r[i] = (T) it.next();
         }
+
+        // If this set fits in the specified array with room to spare, the
+        // element in the array immediately following the end of the set is set
+        // to null.
+        if (a.length > size) {
+            a[size] = null;
+        }
+
         return r;
     }
 
