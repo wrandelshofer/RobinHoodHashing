@@ -22,8 +22,8 @@ abstract class AbstractRobinHoodHashSet<E> extends AbstractRobinHoodHashing<E> i
         super(expectedSize);
     }
 
-    public AbstractRobinHoodHashSet(int expectedSize, float loadFactor) {
-        super(expectedSize, loadFactor);
+    public AbstractRobinHoodHashSet(int initialCapacity, float loadFactor) {
+        super(initialCapacity, loadFactor);
     }
 
     protected boolean add(E e) {

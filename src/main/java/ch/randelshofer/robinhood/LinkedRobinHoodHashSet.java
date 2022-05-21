@@ -18,7 +18,7 @@ import static ch.randelshofer.robinhood.RangeAlgorithms.fastRange;
  *     and are hashed using their {@link Object#hashCode} method.</li>
  *     <li>Iteration order is the same as the order in which elements
  *     were added to the set.</li>
- *     <li>Does not allow null values.</li>
+ *     <li>Does not allow {@code null} values.</li>
  * </ul>
  */
 public class LinkedRobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet<E>

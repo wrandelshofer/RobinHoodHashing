@@ -8,6 +8,18 @@ import java.util.Objects;
 import static ch.randelshofer.robinhood.AvalancheAlgorithms.goldenRatioAvalanche;
 import static ch.randelshofer.robinhood.RangeAlgorithms.fastRange;
 
+/**
+ * Robin Hood Hash Map.
+ * <ul>
+ *     <li>Elements are distinguished by their {@link Object#equals} method,
+ *     and are hashed using their {@link Object#hashCode} method.</li>
+ *     <li>Iteration order is not guaranteed.</li>
+ *     <li>Does not allow {@code null} keys.</li>
+ * </ul>
+ *
+ * @param <K>
+ * @param <V>
+ */
 public class RobinHoodHashMap<K, V> extends AbstractMutableRobinHoodHashMap<K, V> {
     private Object[] table;
 
