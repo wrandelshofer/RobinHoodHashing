@@ -29,20 +29,20 @@ public class LinkedRobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet<E
     public LinkedRobinHoodHashSet() {
     }
 
-    public LinkedRobinHoodHashSet(int initialCapacity) {
-        super(initialCapacity);
+    public LinkedRobinHoodHashSet(int expectedSize) {
+        super(expectedSize);
     }
 
-    public LinkedRobinHoodHashSet(int initialCapacity, float loadFactor) {
-        super(initialCapacity, loadFactor);
+    public LinkedRobinHoodHashSet(int expectedSize, float loadFactor) {
+        super(expectedSize, loadFactor);
     }
 
     public LinkedRobinHoodHashSet(Collection<? extends E> c) {
         super(c);
     }
 
-    public LinkedRobinHoodHashSet(Collection<? extends E> c, int initialCapacity, float loadFactor) {
-        super(c, initialCapacity, loadFactor);
+    public LinkedRobinHoodHashSet(Collection<? extends E> c, int expectedSize, float loadFactor) {
+        super(c, expectedSize, loadFactor);
     }
 
     @Override

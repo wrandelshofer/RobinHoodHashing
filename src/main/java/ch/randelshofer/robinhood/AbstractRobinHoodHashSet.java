@@ -18,12 +18,12 @@ abstract class AbstractRobinHoodHashSet<E> extends AbstractRobinHoodHashing<E> i
         super();
     }
 
-    public AbstractRobinHoodHashSet(int initialCapacity) {
-        super(initialCapacity);
+    public AbstractRobinHoodHashSet(int expectedSize) {
+        super(expectedSize);
     }
 
-    public AbstractRobinHoodHashSet(int initialCapacity, float loadFactor) {
-        super(initialCapacity, loadFactor);
+    public AbstractRobinHoodHashSet(int expectedSize, float loadFactor) {
+        super(expectedSize, loadFactor);
     }
 
     protected boolean add(E e) {

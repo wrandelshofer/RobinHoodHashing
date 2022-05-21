@@ -23,20 +23,20 @@ public class IdentityRobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet
         super();
     }
 
-    public IdentityRobinHoodHashSet(int initialCapacity) {
-        this(initialCapacity, 0.5f);
+    public IdentityRobinHoodHashSet(int expectedSize) {
+        this(expectedSize, 0.5f);
     }
 
-    public IdentityRobinHoodHashSet(int initialCapacity, float loadFactor) {
-        super(initialCapacity, loadFactor);
+    public IdentityRobinHoodHashSet(int expectedSize, float loadFactor) {
+        super(expectedSize, loadFactor);
     }
 
     public IdentityRobinHoodHashSet(Collection<? extends E> c) {
-        this(c, c.size() * 2, 0.5f);
+        this(c, c.size(), 0.5f);
     }
 
-    public IdentityRobinHoodHashSet(Collection<? extends E> c, int initialCapacity, float loadFactor) {
-        super(c, initialCapacity, loadFactor);
+    public IdentityRobinHoodHashSet(Collection<? extends E> c, int expectedSize, float loadFactor) {
+        super(c, expectedSize, loadFactor);
     }
 
     @Override

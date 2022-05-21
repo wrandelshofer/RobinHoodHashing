@@ -17,21 +17,21 @@ public abstract class AbstractMutableRobinHoodHashSet<E> extends AbstractRobinHo
         super();
     }
 
-    public AbstractMutableRobinHoodHashSet(int initialCapacity) {
-        super(initialCapacity);
+    public AbstractMutableRobinHoodHashSet(int expectedSize) {
+        super(expectedSize);
     }
 
-    public AbstractMutableRobinHoodHashSet(int initialCapacity, float loadFactor) {
-        super(initialCapacity, loadFactor);
+    public AbstractMutableRobinHoodHashSet(int expectedSize, float loadFactor) {
+        super(expectedSize, loadFactor);
     }
 
     public AbstractMutableRobinHoodHashSet(Collection<? extends E> c) {
-        this(c, c.size() * 2, 0.5f);
+        this(c, c.size(), 0.5f);
     }
 
-    public AbstractMutableRobinHoodHashSet(Collection<? extends E> c, int initialCapacity, float loadFactor) {
-        super(initialCapacity, loadFactor);
-        for (E e:c){
+    public AbstractMutableRobinHoodHashSet(Collection<? extends E> c, int expectedSize, float loadFactor) {
+        super(expectedSize, loadFactor);
+        for (E e : c) {
             add(e);
         }
     }

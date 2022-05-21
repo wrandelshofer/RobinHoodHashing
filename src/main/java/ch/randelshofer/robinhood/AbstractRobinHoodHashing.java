@@ -41,25 +41,25 @@ public abstract class AbstractRobinHoodHashing<E> implements Cloneable, Serializ
     }
 
 
-    protected AbstractRobinHoodHashing(int initialCapacity) {
-        this(initialCapacity, 0.5f);
+    protected AbstractRobinHoodHashing(int expectedSize) {
+        this(expectedSize, 0.5f);
     }
 
     /**
      * Creates an empty hash set with the specified constraints.
      *
-     * @param initialCapacity the initial capacity
-     * @param loadFactor      the maximal load factor upon insertion
+     * @param expectedSize the initial capacity
+     * @param loadFactor   the maximal load factor upon insertion
      */
-    protected AbstractRobinHoodHashing(int initialCapacity, float loadFactor) {
-        if (initialCapacity < 0) {
-            throw new IllegalArgumentException("initialCapacity=" + initialCapacity);
+    protected AbstractRobinHoodHashing(int expectedSize, float loadFactor) {
+        if (expectedSize < 0) {
+            throw new IllegalArgumentException("expectedSize=" + expectedSize);
         }
         if (loadFactor <= 0 || loadFactor > 1) {
             throw new IllegalArgumentException("loadFactor=" + loadFactor);
         }
         this.loadFactor = loadFactor;
-        this.capacity = roundCapacity(initialCapacity);
+        this.capacity = roundCapacity((int) (expectedSize / loadFactor));
         computeThreshold(this.capacity);
         createTable(this.capacity);
     }

@@ -9,12 +9,12 @@ public abstract class AbstractRobinHoodHashMap<K, V> extends AbstractRobinHoodHa
     public AbstractRobinHoodHashMap() {
     }
 
-    public AbstractRobinHoodHashMap(int initialCapacity) {
-        super(initialCapacity);
+    public AbstractRobinHoodHashMap(int expectedSize) {
+        super(expectedSize);
     }
 
-    public AbstractRobinHoodHashMap(int initialCapacity, float loadFactor) {
-        super(initialCapacity, loadFactor);
+    public AbstractRobinHoodHashMap(int expectedSize, float loadFactor) {
+        super(expectedSize, loadFactor);
     }
 
     protected void clear() {

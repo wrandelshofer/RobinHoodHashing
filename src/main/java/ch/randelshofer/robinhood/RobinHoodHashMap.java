@@ -14,35 +14,35 @@ public class RobinHoodHashMap<K, V> extends AbstractMutableRobinHoodHashMap<K, V
     public RobinHoodHashMap() {
     }
 
-    public RobinHoodHashMap(int initialCapacity) {
-        super(initialCapacity);
+    public RobinHoodHashMap(int expectedSize) {
+        super(expectedSize);
     }
 
-    public RobinHoodHashMap(int initialCapacity, float loadFactor) {
-        super(initialCapacity, loadFactor);
+    public RobinHoodHashMap(int expectedSize, float loadFactor) {
+        super(expectedSize, loadFactor);
     }
 
     public RobinHoodHashMap(Map<? extends K, ? extends V> m, float loadFactor) {
         this(m, (int) (m.size() / loadFactor), loadFactor);
     }
 
-    public RobinHoodHashMap(Collection<? extends Entry<? extends K, ? extends V>> entries, int initialCapacity, float loadFactor) {
-        super(initialCapacity, loadFactor);
+    public RobinHoodHashMap(Collection<? extends Entry<? extends K, ? extends V>> entries, int expectedSize, float loadFactor) {
+        super(expectedSize, loadFactor);
         for (Entry<? extends K, ? extends V> entry : entries) {
             put(entry.getKey(), entry.getValue());
         }
     }
 
     public RobinHoodHashMap(Collection<? extends Entry<? extends K, ? extends V>> entries) {
-        this(entries, entries.size() * 2, 0.5f);
+        this(entries, entries.size(), 0.5f);
     }
 
-    public RobinHoodHashMap(Map<? extends K, ? extends V> m, int initialCapacity, float loadFactor) {
-        this(m.entrySet(), initialCapacity, loadFactor);
+    public RobinHoodHashMap(Map<? extends K, ? extends V> m, int expectedSize, float loadFactor) {
+        this(m.entrySet(), expectedSize, loadFactor);
     }
 
     public RobinHoodHashMap(Map<? extends K, ? extends V> m) {
-        this(m, m.size() * 2, 0.5f);
+        this(m, m.size(), 0.5f);
     }
 
     @Override

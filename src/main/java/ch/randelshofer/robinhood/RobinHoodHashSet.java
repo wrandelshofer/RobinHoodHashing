@@ -27,20 +27,20 @@ public class RobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet<E>
     public RobinHoodHashSet() {
     }
 
-    public RobinHoodHashSet(int initialCapacity) {
-        super(initialCapacity);
+    public RobinHoodHashSet(int expectedSize) {
+        super(expectedSize);
     }
 
-    public RobinHoodHashSet(int initialCapacity, float loadFactor) {
-        super(initialCapacity, loadFactor);
+    public RobinHoodHashSet(int expectedSize, float loadFactor) {
+        super(expectedSize, loadFactor);
     }
 
     public RobinHoodHashSet(Collection<? extends E> c) {
         super(c);
     }
 
-    public RobinHoodHashSet(Collection<? extends E> c, int initialCapacity, float loadFactor) {
-        super(c, initialCapacity, loadFactor);
+    public RobinHoodHashSet(Collection<? extends E> c, int expectedSize, float loadFactor) {
+        super(c, expectedSize, loadFactor);
     }
 
     @Override

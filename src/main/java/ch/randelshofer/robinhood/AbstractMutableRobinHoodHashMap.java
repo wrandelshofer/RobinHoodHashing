@@ -14,12 +14,12 @@ public abstract class AbstractMutableRobinHoodHashMap<K, V> extends AbstractRobi
     public AbstractMutableRobinHoodHashMap() {
     }
 
-    public AbstractMutableRobinHoodHashMap(int initialCapacity) {
-        super(initialCapacity);
+    public AbstractMutableRobinHoodHashMap(int expectedSize) {
+        super(expectedSize);
     }
 
-    public AbstractMutableRobinHoodHashMap(int initialCapacity, float loadFactor) {
-        super(initialCapacity, loadFactor);
+    public AbstractMutableRobinHoodHashMap(int expectedSize, float loadFactor) {
+        super(expectedSize, loadFactor);
     }
 
     @Override
