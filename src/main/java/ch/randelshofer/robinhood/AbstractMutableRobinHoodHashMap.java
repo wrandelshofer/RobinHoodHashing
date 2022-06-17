@@ -189,17 +189,6 @@ public abstract class AbstractMutableRobinHoodHashMap<K, V> extends AbstractRobi
             return new MutableEntrySetIterator();
         }
 
-        /**
-         * @Override public boolean add(Entry<K, V> e) {
-         * boolean added = !AbstractMutableRobinHoodHashMap.this.containsKey(e.getKey())
-         * || Objects.equals(AbstractMutableRobinHoodHashMap.this.get(e.getKey()), e.getValue());
-         * if (added) {
-         * AbstractMutableRobinHoodHashMap.this.put(e.getKey(), e.getValue());
-         * }
-         * return added;
-         * }
-         */
-
         @Override
         @SuppressWarnings("unchecked")
         public boolean remove(Object o) {
