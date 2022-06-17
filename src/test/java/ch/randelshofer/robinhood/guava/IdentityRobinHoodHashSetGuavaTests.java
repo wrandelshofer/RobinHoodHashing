@@ -17,9 +17,9 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * Tests IdentityRobinHoodHashSet with the Guava test suite.
- * <p>
- * Unfortunately Guava does not test identity hash sets.
+ Tests IdentityRobinHoodHashSet with the Guava test suite.
+ <p>
+ Unfortunately Guava does not test identity hash sets.
  */
 public class IdentityRobinHoodHashSetGuavaTests {
     @Ignore

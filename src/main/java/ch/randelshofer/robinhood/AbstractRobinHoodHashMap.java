@@ -142,7 +142,7 @@ public abstract class AbstractRobinHoodHashMap<K, V> extends AbstractRobinHoodHa
     }
 
     @SuppressWarnings("unchecked")
-    protected  void resize(int newCapacity) {
+    protected void resize(int newCapacity) {
         Object[] objects = toArray();
         computeThreshold(newCapacity);
         createTable(newCapacity);

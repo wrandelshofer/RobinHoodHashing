@@ -12,29 +12,29 @@ import org.openjdk.jmh.annotations.Warmup;
 import java.util.concurrent.TimeUnit;
 
 /**
- * <pre>
- * # JMH version: 1.28
- * # VM version: JDK 17, OpenJDK 64-Bit Server VM, 17+35-2724
- * # Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz, L3 Cache 12 MB, Memory 32 GB 2667 MHz DDR4
- * # -Xmx8g
- *
- * Benchmark                                             Mode  Cnt        Score        Error  Units
- * RobinHoodHashSetJmhBenchmark.measureAddAll             avgt    2  2035811.479          ns/op
- * RobinHoodHashSetJmhBenchmark.measureAddAllAndGrow      avgt    2  4860091.689          ns/op
- * RobinHoodHashSetJmhBenchmark.measureClone              avgt    2    54269.321          ns/op
- * RobinHoodHashSetJmhBenchmark.measureCloneAndRemoveAll  avgt    2  1977180.581          ns/op
- * RobinHoodHashSetJmhBenchmark.measureNewInstance        avgt    2        1.586          ns/op
- * RobinHoodHashSetJmhBenchmark.measureRemoveAdd          avgt    2       53.482          ns/op
- * RobinHoodHashSetJmhBenchmark.measureSuccessfulGet      avgt    2       10.249          ns/op
- * RobinHoodHashSetJmhBenchmark.measureUnsuccessfulGet    avgt    2       16.128          ns/op
- *
- * The hashtable fits into the L3 cache.
- *
- * RobinHoodHashSet capacity:200000
- * RobinHoodHashSet fillRatio:0.5
- * RobinHoodHashSet loadFactor:0.5
- * RobinHoodHashSet costStats:IntSummaryStatistics{count=100000, sum=34303, min=0, average=0.343030, max=7}
- * </pre>
+ <pre>
+ # JMH version: 1.28
+ # VM version: JDK 17, OpenJDK 64-Bit Server VM, 17+35-2724
+ # Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz, L3 Cache 12 MB, Memory 32 GB 2667 MHz DDR4
+ # -Xmx8g
+
+ Benchmark                                             Mode  Cnt        Score        Error  Units
+ RobinHoodHashSetJmhBenchmark.measureAddAll             avgt    2  2035811.479          ns/op
+ RobinHoodHashSetJmhBenchmark.measureAddAllAndGrow      avgt    2  4860091.689          ns/op
+ RobinHoodHashSetJmhBenchmark.measureClone              avgt    2    54269.321          ns/op
+ RobinHoodHashSetJmhBenchmark.measureCloneAndRemoveAll  avgt    2  1977180.581          ns/op
+ RobinHoodHashSetJmhBenchmark.measureNewInstance        avgt    2        1.586          ns/op
+ RobinHoodHashSetJmhBenchmark.measureRemoveAdd          avgt    2       53.482          ns/op
+ RobinHoodHashSetJmhBenchmark.measureSuccessfulGet      avgt    2       10.249          ns/op
+ RobinHoodHashSetJmhBenchmark.measureUnsuccessfulGet    avgt    2       16.128          ns/op
+
+ The hashtable fits into the L3 cache.
+
+ RobinHoodHashSet capacity:200000
+ RobinHoodHashSet fillRatio:0.5
+ RobinHoodHashSet loadFactor:0.5
+ RobinHoodHashSet costStats:IntSummaryStatistics{count=100000, sum=34303, min=0, average=0.343030, max=7}
+ </pre>
  */
 @Fork(value = 1, jvmArgsAppend = {})
 @Measurement(iterations = 2)
@@ -68,11 +68,11 @@ public class RobinHoodHashSetJmhBenchmark {
         RobinHoodHashSet<BenchmarkDataSet.Key> set = new RobinHoodHashSet<>(
                 DATA_SET.constantIdentitySet.size() * 2,
                 0.5f);
-        boolean added=true;
+        boolean added = true;
         for (BenchmarkDataSet.Key v : DATA_SET.valuesInSet) {
-            added&=set.add(v);
+            added &= set.add(v);
         }
-        if (!added||set.size()!=DATA_SET.valuesInSet.length) {
+        if (!added || set.size() != DATA_SET.valuesInSet.length) {
             throw new AssertionError();
         }
     }
@@ -82,11 +82,11 @@ public class RobinHoodHashSetJmhBenchmark {
         RobinHoodHashSet<BenchmarkDataSet.Key> set = new RobinHoodHashSet<>(
                 16,
                 0.5f);
-        boolean added=true;
+        boolean added = true;
         for (BenchmarkDataSet.Key v : DATA_SET.valuesInSet) {
-            added&=set.add(v);
+            added &= set.add(v);
         }
-        if (!added||set.size()!=DATA_SET.valuesInSet.length) {
+        if (!added || set.size() != DATA_SET.valuesInSet.length) {
             throw new AssertionError();
         }
     }
@@ -99,11 +99,11 @@ public class RobinHoodHashSetJmhBenchmark {
     @Benchmark
     public void measureCloneAndRemoveAll() {
         RobinHoodHashSet<BenchmarkDataSet.Key> set = CONSTANT_SET.clone();
-        boolean removed=true;
+        boolean removed = true;
         for (BenchmarkDataSet.Key v : DATA_SET.valuesInSet) {
-            removed&=set.remove(v);
+            removed &= set.remove(v);
         }
-        if (!removed||set.size()!=0) {
+        if (!removed || set.size() != 0) {
             throw new AssertionError();
         }
     }

@@ -5,33 +5,33 @@ import java.util.IntSummaryStatistics;
 
 public abstract class AbstractRobinHoodHashing<E> implements Cloneable, Serializable {
     /**
-     * The number of non-empty elements in the table.
+     The number of non-empty elements in the table.
      */
     protected int size;
     /**
-     * Upon insertion, when the number of non-empty elements falls above
-     * this ratio, we grow the table.
-     * <p>
-     * Robert Sedgewick, Kevin Wayne (2011) propose to never fill an
-     * open addressing hash table with linear probing by more than 50%.
-     * See {@link ch.randelshofer.robinhood}.
-     * <p>
-     * If this value is {@literal >= 1} the table will never grow.
+     Upon insertion, when the number of non-empty elements falls above
+     this ratio, we grow the table.
+     <p>
+     Robert Sedgewick, Kevin Wayne (2011) propose to never fill an
+     open addressing hash table with linear probing by more than 50%.
+     See {@link ch.randelshofer.robinhood}.
+     <p>
+     If this value is {@literal >= 1} the table will never grow.
      */
     protected float loadFactor;
 
     /**
-     * Modification counter for detecting concurrent modification.
+     Modification counter for detecting concurrent modification.
      */
     protected transient int modCount;
 
     /**
-     * Invariant: maxLoad = clamp(table.length * maxLoadFactor, 0, table.length)
+     Invariant: maxLoad = clamp(table.length * maxLoadFactor, 0, table.length)
      */
     protected int threshold;
 
     /**
-     * The capacity of the hash table.
+     The capacity of the hash table.
      */
     protected int capacity;
 
@@ -46,10 +46,10 @@ public abstract class AbstractRobinHoodHashing<E> implements Cloneable, Serializ
     }
 
     /**
-     * Creates an empty hash set with the specified constraints.
-     *
-     * @param expectedSize the initial capacity
-     * @param loadFactor   the maximal load factor upon insertion
+     Creates an empty hash set with the specified constraints.
+
+     @param expectedSize the initial capacity
+     @param loadFactor   the maximal load factor upon insertion
      */
     protected AbstractRobinHoodHashing(int expectedSize, float loadFactor) {
         if (expectedSize < 0) {
@@ -69,7 +69,7 @@ public abstract class AbstractRobinHoodHashing<E> implements Cloneable, Serializ
     }
 
     /**
-     * Rounds the capacity up so that it supports the range operation.
+     Rounds the capacity up so that it supports the range operation.
      */
     protected int roundCapacity(int desiredCapacity) {
         return desiredCapacity;
@@ -92,17 +92,17 @@ public abstract class AbstractRobinHoodHashing<E> implements Cloneable, Serializ
     }
 
     /**
-     * Searches for the specified element.
-     * <p>
-     * If the element is present, returns the index of the
-     * bucket that contains the element.
-     * <p>
-     * If the element is absent returns {@code (-index - 1)} where
-     * {@code index} is the last unsuccessfully probed index
-     * in the array.
-     *
-     * @param expected the object to be found
-     * @param h        the hash of the object to be found
+     Searches for the specified element.
+     <p>
+     If the element is present, returns the index of the
+     bucket that contains the element.
+     <p>
+     If the element is absent returns {@code (-index - 1)} where
+     {@code index} is the last unsuccessfully probed index
+     in the array.
+
+     @param expected the object to be found
+     @param h        the hash of the object to be found
      */
     protected int find(Object expected, int h) {
         if (capacity == 0) {
@@ -142,26 +142,26 @@ public abstract class AbstractRobinHoodHashing<E> implements Cloneable, Serializ
     }
 
     /**
-     * Computes a hash code for {@code e} in the range {@code [0, length)}.
-     *
-     * @param e      an element
-     * @param length the table length
-     * @return an index
+     Computes a hash code for {@code e} in the range {@code [0, length)}.
+
+     @param e      an element
+     @param length the table length
+     @return an index
      */
     protected abstract int hash(Object e, int length);
 
     /**
-     * Returns true if the provided objects are equal
-     *
-     * @param a object a
-     * @param b object b
-     * @return whether the objects are equal
+     Returns true if the provided objects are equal
+
+     @param a object a
+     @param b object b
+     @return whether the objects are equal
      */
     protected abstract boolean isEqual(Object a, Object b);
 
     /**
-     * Gets {@code c} for the entry in the table of length {@code length}
-     * at index {@code i}.
+     Gets {@code c} for the entry in the table of length {@code length}
+     at index {@code i}.
      */
     protected int getCost(int i) {
         var entry = getKeyFromTable(i);
@@ -314,7 +314,7 @@ public abstract class AbstractRobinHoodHashing<E> implements Cloneable, Serializ
 
 
     protected void grow() {
-        int desiredCapacity = Math.max(1, capacity  *2);
+        int desiredCapacity = Math.max(1, capacity * 2);
         if (desiredCapacity < size + 1) {
             throw new IllegalStateException("Cannot grow table.");
         }
@@ -327,7 +327,6 @@ public abstract class AbstractRobinHoodHashing<E> implements Cloneable, Serializ
     protected abstract void shiftForInsertion(int index);
 
     protected abstract void setKeyInTable(int index, E e);
-
 
 
 }

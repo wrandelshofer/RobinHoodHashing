@@ -16,7 +16,7 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * Tests RobinHoodHashSet with the Guava test suite.
+ Tests RobinHoodHashSet with the Guava test suite.
  */
 public class RobinHoodHashMapGuavaTests {
     public static Test suite() {

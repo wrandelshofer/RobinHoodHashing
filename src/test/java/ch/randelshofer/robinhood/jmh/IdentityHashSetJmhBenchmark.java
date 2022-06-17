@@ -14,27 +14,27 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
- * <pre>
- * # JMH version: 1.28
- * # VM version: JDK 17, OpenJDK 64-Bit Server VM, 17+35-2724
- * # Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz
- *
- * Benchmark                                             Mode  Cnt   Score   Error  Units
- * IdentityHashSetJmhBenchmark.measureAddAll             avgt    2  3070578.078          ns/op
- * IdentityHashSetJmhBenchmark.measureAddAllAndGrow      avgt    2  6406697.484          ns/op
- * IdentityHashSetJmhBenchmark.measureClone              avgt    2   873753.743          ns/op
- * IdentityHashSetJmhBenchmark.measureCloneAndRemoveAll  avgt    2  3025901.831          ns/op
- * IdentityHashSetJmhBenchmark.measureRemoveAdd          avgt    2       54.085          ns/op
- * IdentityHashSetJmhBenchmark.measureSuccessfulGet      avgt    2        8.669          ns/op
- * IdentityHashSetJmhBenchmark.measureUnsuccessfulGet    avgt    2       13.436          ns/op
- * </pre>
+ <pre>
+ # JMH version: 1.28
+ # VM version: JDK 17, OpenJDK 64-Bit Server VM, 17+35-2724
+ # Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz
+
+ Benchmark                                             Mode  Cnt   Score   Error  Units
+ IdentityHashSetJmhBenchmark.measureAddAll             avgt    2  3070578.078          ns/op
+ IdentityHashSetJmhBenchmark.measureAddAllAndGrow      avgt    2  6406697.484          ns/op
+ IdentityHashSetJmhBenchmark.measureClone              avgt    2   873753.743          ns/op
+ IdentityHashSetJmhBenchmark.measureCloneAndRemoveAll  avgt    2  3025901.831          ns/op
+ IdentityHashSetJmhBenchmark.measureRemoveAdd          avgt    2       54.085          ns/op
+ IdentityHashSetJmhBenchmark.measureSuccessfulGet      avgt    2        8.669          ns/op
+ IdentityHashSetJmhBenchmark.measureUnsuccessfulGet    avgt    2       13.436          ns/op
+ </pre>
  */
 @Fork(value = 1, jvmArgsAppend = {})
 @Measurement(iterations = 2)
 @Warmup(iterations = 2)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @BenchmarkMode(Mode.AverageTime)
-public class IdentityHashSetJmhBenchmark  {
+public class IdentityHashSetJmhBenchmark {
     private static BenchmarkDataSet DATA_SET = new BenchmarkDataSet(100_000, 0, 500_000, -1);
 
     private static final Set<BenchmarkDataSet.Key> CONSTANT_SET = DATA_SET.constantIdentitySet;

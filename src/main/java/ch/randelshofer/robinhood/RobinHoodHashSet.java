@@ -10,13 +10,13 @@ import static ch.randelshofer.robinhood.AvalancheAlgorithms.goldenRatioAvalanche
 import static ch.randelshofer.robinhood.RangeAlgorithms.fastRange;
 
 /**
- * Robin Hood Hash Set.
- * <ul>
- *     <li>Elements are distinguished by their {@link Object#equals} method,
- *     and are hashed using their {@link Object#hashCode} method.</li>
- *     <li>Iteration order is not guaranteed.</li>
- *     <li>Does not allow {@code null} values.</li>
- * </ul>
+ Robin Hood Hash Set.
+ <ul>
+ <li>Elements are distinguished by their {@link Object#equals} method,
+ and are hashed using their {@link Object#hashCode} method.</li>
+ <li>Iteration order is not guaranteed.</li>
+ <li>Does not allow {@code null} values.</li>
+ </ul>
  */
 public class RobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet<E>
         implements Cloneable {

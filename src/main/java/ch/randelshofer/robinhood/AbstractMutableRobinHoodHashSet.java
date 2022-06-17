@@ -8,8 +8,8 @@ import java.util.Set;
 import static java.lang.Math.max;
 
 /**
- * Extends {@link AbstractRobinHoodHashSet} with the API from the {@link Set}
- * interface.
+ Extends {@link AbstractRobinHoodHashSet} with the API from the {@link Set}
+ interface.
  */
 public abstract class AbstractMutableRobinHoodHashSet<E> extends AbstractRobinHoodHashSet<E>
         implements Set<E> {
@@ -59,7 +59,7 @@ public abstract class AbstractMutableRobinHoodHashSet<E> extends AbstractRobinHo
     public boolean retainAll(Collection<?> c) {
         Objects.requireNonNull(c);
         var modified = false;
-        for (var it = iterator(); it.hasNext();) {
+        for (var it = iterator(); it.hasNext(); ) {
             if (!c.contains(it.next())) {
                 it.remove();
                 modified = true;
@@ -67,14 +67,15 @@ public abstract class AbstractMutableRobinHoodHashSet<E> extends AbstractRobinHo
         }
         return modified;
     }
+
     public boolean removeAll(Collection<?> c) {
         Objects.requireNonNull(c);
         var modified = false;
-        if (size()>c.size()){
+        if (size() > c.size()) {
             for (Object e : c) {
                 modified |= remove(e);
             }
-        }else {
+        } else {
             for (var it = iterator(); it.hasNext(); ) {
                 if (c.contains(it.next())) {
                     it.remove();

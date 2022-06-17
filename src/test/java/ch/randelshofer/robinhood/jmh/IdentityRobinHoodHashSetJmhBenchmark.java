@@ -12,37 +12,38 @@ import org.openjdk.jmh.annotations.Warmup;
 import java.util.concurrent.TimeUnit;
 
 /**
- * <pre>
- * # JMH version: 1.28
- * # VM version: JDK 17, OpenJDK 64-Bit Server VM, 17+35-2724
- * # Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz
- *
- * Benchmark                                                      Mode  Cnt         Score       Error  Units
- * IdentityRobinHoodHashSetJmhBenchmark.measureAddAll             avgt    2  16_78617.788          ns/op
- * IdentityRobinHoodHashSetJmhBenchmark.measureAddAllAndGrow      avgt    2  50_43434.842          ns/op
- * IdentityRobinHoodHashSetJmhBenchmark.measureClone              avgt    2    _71799.364          ns/op
- * IdentityRobinHoodHashSetJmhBenchmark.measureCloneAndRemoveAll  avgt    2  21_48396.884          ns/op
- * IdentityRobinHoodHashSetJmhBenchmark.measureRemoveAdd          avgt    2        46.323          ns/op
- * IdentityRobinHoodHashSetJmhBenchmark.measureSuccessfulGet      avgt    2         9.600          ns/op
- * IdentityRobinHoodHashSetJmhBenchmark.measureUnsuccessfulGet    avgt    2        14.943          ns/op
- *
- * IdentityRobinHoodHashSet capacity:262144
- * IdentityRobinHoodHashSet fillRatio:0.38146973
- * IdentityRobinHoodHashSet loadFactor:0.5
- * IdentityRobinHoodHashSet costStats:IntSummaryStatistics{count=100000, sum=30402, min=0, average=0.304020, max=6}
- * </pre>
+ <pre>
+ # JMH version: 1.28
+ # VM version: JDK 17, OpenJDK 64-Bit Server VM, 17+35-2724
+ # Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz
+
+ Benchmark                                                      Mode  Cnt         Score       Error  Units
+ IdentityRobinHoodHashSetJmhBenchmark.measureAddAll             avgt    2  16_78617.788          ns/op
+ IdentityRobinHoodHashSetJmhBenchmark.measureAddAllAndGrow      avgt    2  50_43434.842          ns/op
+ IdentityRobinHoodHashSetJmhBenchmark.measureClone              avgt    2    _71799.364          ns/op
+ IdentityRobinHoodHashSetJmhBenchmark.measureCloneAndRemoveAll  avgt    2  21_48396.884          ns/op
+ IdentityRobinHoodHashSetJmhBenchmark.measureRemoveAdd          avgt    2        46.323          ns/op
+ IdentityRobinHoodHashSetJmhBenchmark.measureSuccessfulGet      avgt    2         9.600          ns/op
+ IdentityRobinHoodHashSetJmhBenchmark.measureUnsuccessfulGet    avgt    2        14.943          ns/op
+
+ IdentityRobinHoodHashSet capacity:262144
+ IdentityRobinHoodHashSet fillRatio:0.38146973
+ IdentityRobinHoodHashSet loadFactor:0.5
+ IdentityRobinHoodHashSet costStats:IntSummaryStatistics{count=100000, sum=30402, min=0, average=0.304020, max=6}
+ </pre>
  */
 @Fork(value = 1, jvmArgsAppend = {})
 @Measurement(iterations = 2)
 @Warmup(iterations = 2)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @BenchmarkMode(Mode.AverageTime)
-public class IdentityRobinHoodHashSetJmhBenchmark  {
+public class IdentityRobinHoodHashSetJmhBenchmark {
     private static int index;
     private final static BenchmarkDataSet DATA_SET = new BenchmarkDataSet(100_000, 0, 500_000, -1);
 
 
     private static final IdentityRobinHoodHashSet<BenchmarkDataSet.Key> CONSTANT_SET = new IdentityRobinHoodHashSet<>(DATA_SET.constantIdentitySet);
+
     static {
         System.out.println("IdentityRobinHoodHashSet size:" + CONSTANT_SET.size());
         System.out.println("IdentityRobinHoodHashSet capacity:" + CONSTANT_SET.getCapacity());

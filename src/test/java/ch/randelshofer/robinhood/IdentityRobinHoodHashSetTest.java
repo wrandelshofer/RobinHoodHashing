@@ -7,7 +7,7 @@ class IdentityRobinHoodHashSetTest extends AbstractSetTest {
 
     @Override
     protected <T> Set<T> create(int expectedMaxSize, float maxLoadFactor) {
-        return new IdentityRobinHoodHashSet<>(expectedMaxSize,maxLoadFactor);
+        return new IdentityRobinHoodHashSet<>(expectedMaxSize, maxLoadFactor);
     }
 
 }

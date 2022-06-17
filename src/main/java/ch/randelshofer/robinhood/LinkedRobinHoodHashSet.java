@@ -12,14 +12,14 @@ import static ch.randelshofer.robinhood.AvalancheAlgorithms.goldenRatioAvalanche
 import static ch.randelshofer.robinhood.RangeAlgorithms.fastRange;
 
 /**
- * Linked Robin Hood Hash Set.
- * <ul>
- *     <li>Elements are distinguished by their {@link Object#equals} method,
- *     and are hashed using their {@link Object#hashCode} method.</li>
- *     <li>Iteration order is the same as the order in which elements
- *     were added to the set.</li>
- *     <li>Does not allow {@code null} values.</li>
- * </ul>
+ Linked Robin Hood Hash Set.
+ <ul>
+ <li>Elements are distinguished by their {@link Object#equals} method,
+ and are hashed using their {@link Object#hashCode} method.</li>
+ <li>Iteration order is the same as the order in which elements
+ were added to the set.</li>
+ <li>Does not allow {@code null} values.</li>
+ </ul>
  */
 public class LinkedRobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet<E>
         implements SequencedCollection<E> {
@@ -238,12 +238,12 @@ public class LinkedRobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet<E
 
 
     /**
-     * Serializes this instance.
-     *
-     * @serialData capacity (int),
-     * load factor (float),
-     * size (int),
-     * all elements of the set in order.
+     Serializes this instance.
+
+     @serialData capacity (int),
+     load factor (float),
+     size (int),
+     all elements of the set in order.
      */
     @java.io.Serial
     private void writeObject(java.io.ObjectOutputStream s)
@@ -257,7 +257,7 @@ public class LinkedRobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet<E
     }
 
     /**
-     * Deserializes this instance.
+     Deserializes this instance.
      */
     @java.io.Serial
     private void readObject(java.io.ObjectInputStream s)

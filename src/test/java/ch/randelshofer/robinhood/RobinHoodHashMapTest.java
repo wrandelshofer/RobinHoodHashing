@@ -8,7 +8,7 @@ class RobinHoodHashMapTest extends AbstractSetTest {
 
     @Override
     protected <T> Set<T> create(int expectedMaxSize, float maxLoadFactor) {
-        return Collections.newSetFromMap(new RobinHoodHashMap<>(expectedMaxSize,maxLoadFactor));
+        return Collections.newSetFromMap(new RobinHoodHashMap<>(expectedMaxSize, maxLoadFactor));
     }
 
 }

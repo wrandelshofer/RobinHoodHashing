@@ -16,7 +16,7 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * Tests RobinHoodHashSet with the Guava test suite.
+ Tests RobinHoodHashSet with the Guava test suite.
  */
 public class RobinHoodHashSetGuavaTests {
     public static Test suite() {

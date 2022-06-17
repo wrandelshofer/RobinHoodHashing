@@ -1,10 +1,11 @@
 # Robin Hood hashing
+
 Experimental implementation of the noble Robin Hood hashing algorithm which
 takes from the rich and gives to the poor.
 
 Robin Hood hashing is an 'open addressing hashing' algorithm with 'linear
 probing'. The algorithm globally minimizes the number of probes needed to
-find a desired element (probe count). 
+find a desired element (probe count).
 It also minimizes the variance of the probe counts.
 
 The algorithm achieves this, by keeping all non-empty elements in the table
@@ -24,9 +25,8 @@ The cost `c` for linear probing of an element with hash code `h` in
 bucket `i` in the table is: `c = (h <= i) ? i - h : i - h + table.length`.
 
 Elements with a low distance from their preferred bucket are considered to be
-_'rich'_, elements with a high distance from their preferred bucket are 
+_'rich'_, elements with a high distance from their preferred bucket are
 considered to be _'poor'_.
-
 
 ### Inserting a new element
 
@@ -48,7 +48,7 @@ The sort-key of the element then becomes `k = h - table.length`.
 ### Deleting an element
 
 When we remove an element, we shift back all elements that were displaced by
-it. 
+it.
 
 We shift back all non-empty elements along the probe sequence until we find an
 element with zero cost `c`, or an empty bucket.
@@ -62,7 +62,7 @@ addressing hashing algorithms do.
 
 We start probing at index `i=h`. The sort-key is `k=h`.
 
-If the bucket at `table[i]` is empty, we know that the element is not in the 
+If the bucket at `table[i]` is empty, we know that the element is not in the
 table.
 
 If the bucket is occupied, we search along the probe sequence until we find a
@@ -71,10 +71,10 @@ bucket or an element with a higher key than `k`.
 
 ### Invariants
 
-  1. The table always has at least one empty bucket. 
-     
-  2. All non-empty elements in the table are sorted by their sort-key `k`.
+1. The table always has at least one empty bucket.
 
-  3. The total probe count for all elements is minimal.
+2. All non-empty elements in the table are sorted by their sort-key `k`.
 
-  4. The probe counts for all elements in the set has minimal variance.
+3. The total probe count for all elements is minimal.
+
+4. The probe counts for all elements in the set has minimal variance.
