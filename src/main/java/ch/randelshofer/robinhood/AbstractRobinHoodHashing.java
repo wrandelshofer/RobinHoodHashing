@@ -3,7 +3,10 @@ package ch.randelshofer.robinhood;
 import java.io.Serializable;
 import java.util.IntSummaryStatistics;
 
-public abstract class AbstractRobinHoodHashing<E> implements Cloneable, Serializable {
+/**
+ * Abstract base class for classes that use Robin Hood Hashing.
+ */
+abstract class AbstractRobinHoodHashing<E> implements Cloneable, Serializable {
     /**
      * The number of non-empty elements in the table.
      */

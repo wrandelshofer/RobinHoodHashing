@@ -11,7 +11,7 @@ import java.util.Spliterators;
 import java.util.function.Consumer;
 
 /**
- Robin Hood Hash Set.
+ * Abstract base class for sets that use Robin Hood Hashing.
  */
 abstract class AbstractRobinHoodHashSet<E> extends AbstractRobinHoodHashing<E> implements Iterable<E> {
     public AbstractRobinHoodHashSet() {
@@ -90,8 +90,8 @@ abstract class AbstractRobinHoodHashSet<E> extends AbstractRobinHoodHashing<E> i
 
 
     /**
-     Gets {@code k} for the bucket {@code i}
-     in the table of length {@code length}.
+     * Gets {@code k} for the bucket {@code i}
+     * in the table of length {@code length}.
      */
     private int getKey(int i) {
         var entry = getKeyFromTable(i);
@@ -162,10 +162,10 @@ abstract class AbstractRobinHoodHashSet<E> extends AbstractRobinHoodHashing<E> i
     }
 
     /**
-     Removes the specified object if it is contained in the set.
-
-     @param o an object
-     @return whether the object was in the set
+     * Removes the specified object if it is contained in the set.
+     *
+     * @param o an object
+     * @return whether the object was in the set
      */
     protected boolean remove(Object o) {
         var h = hash(o, capacity);

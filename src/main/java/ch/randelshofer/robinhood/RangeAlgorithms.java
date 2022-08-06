@@ -1,9 +1,9 @@
 package ch.randelshofer.robinhood;
 
 /**
- Provides range algorithms.
+ * Provides range algorithms.
  */
-public class RangeAlgorithms {
+class RangeAlgorithms {
     /**
      Don't let anyone instantiate this class.
      */

@@ -1,9 +1,9 @@
 package ch.randelshofer.robinhood;
 
 /**
- Provides avalanche algorithms.
+ * Provides avalanche algorithms.
  */
-public class AvalancheAlgorithms {
+class AvalancheAlgorithms {
     /**
      Don't let anyone instantiate this class.
      */

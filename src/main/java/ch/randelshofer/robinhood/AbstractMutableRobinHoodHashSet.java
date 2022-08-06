@@ -8,10 +8,10 @@ import java.util.Set;
 import static java.lang.Math.max;
 
 /**
- Extends {@link AbstractRobinHoodHashSet} with the API from the {@link Set}
- interface.
+ * Extends {@link AbstractRobinHoodHashSet} with the API from the {@link Set}
+ * interface.
  */
-public abstract class AbstractMutableRobinHoodHashSet<E> extends AbstractRobinHoodHashSet<E>
+abstract class AbstractMutableRobinHoodHashSet<E> extends AbstractRobinHoodHashSet<E>
         implements Set<E> {
     public AbstractMutableRobinHoodHashSet() {
         super();

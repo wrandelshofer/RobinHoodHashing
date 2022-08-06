@@ -5,7 +5,10 @@ import java.util.ConcurrentModificationException;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-public abstract class AbstractRobinHoodHashMap<K, V> extends AbstractRobinHoodHashing<K> {
+/**
+ * Abstract base class for maps that use Robin Hood Hashing.
+ */
+abstract class AbstractRobinHoodHashMap<K, V> extends AbstractRobinHoodHashing<K> {
     public AbstractRobinHoodHashMap() {
     }
 

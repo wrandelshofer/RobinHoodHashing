@@ -10,7 +10,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-public abstract class AbstractMutableRobinHoodHashMap<K, V> extends AbstractRobinHoodHashMap<K, V> implements Map<K, V> {
+/**
+ * Extends {@link AbstractRobinHoodHashMap} with the API from the {@link Map}
+ * interface.
+ */
+abstract class AbstractMutableRobinHoodHashMap<K, V> extends AbstractRobinHoodHashMap<K, V> implements Map<K, V> {
     public AbstractMutableRobinHoodHashMap() {
     }
 
