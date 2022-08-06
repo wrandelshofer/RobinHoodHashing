@@ -1,6 +1,5 @@
 package ch.randelshofer.robinhood.jmh;
 
-import ch.randelshofer.robinhood.RangeAlgorithms;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Mode;
@@ -25,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 public class RangeJmhBenchmark {
     private static int word = (int) System.currentTimeMillis();
     private static int p = Math.max(word & 65535, 3);
-    private static long invp = RangeAlgorithms.compute64BitInverse(p);
+    private static long invp = Long.divideUnsigned(-1L, p) + 1;
     private static int powerOf2 = Integer.highestOneBit(p + (p - 1));
 
     @Benchmark
