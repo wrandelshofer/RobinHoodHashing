@@ -8,14 +8,14 @@ import static ch.randelshofer.robinhood.RangeAlgorithms.powerOf2Range;
 import static ch.randelshofer.robinhood.RangeAlgorithms.roundUpToPowerOf2;
 
 /**
- Identity Robin Hood Hash Set.
- <ul>
- <li>Supports up to 2<sup>30</sup> elements.</li>
- <li>Elements are distinguished by their object identity and their
- hash code is generated with {@link System#identityHashCode(Object)}.</li>
- <li>Iteration order is not guaranteed.</li>
- <li>Does not allow {@code null} values.</li>
- </ul>
+ * Identity Robin Hood Hash Set.
+ * <ul>
+ * <li>Supports up to 2<sup>30</sup> elements.</li>
+ * <li>Elements are distinguished by their object identity and their
+ * hash code is generated with {@link System#identityHashCode(Object)}.</li>
+ * <li>Iteration order is not guaranteed.</li>
+ * <li>Does not allow {@code null} values.</li>
+ * </ul>
  */
 public class IdentityRobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet<E>
         implements Cloneable {

@@ -5,19 +5,19 @@ package ch.randelshofer.robinhood;
  */
 class AvalancheAlgorithms {
     /**
-     Don't let anyone instantiate this class.
+     * Don't let anyone instantiate this class.
      */
     public AvalancheAlgorithms() {
     }
 
     /**
-     Avalanches the bits of an integer by applying the finalization
-     step of the Murmur3 algorithm.
-     <p>
-     Reference: Austin Appleby (2008) in {@link ch.randelshofer.robinhood}.
-
-     @param h a 32-bit integer
-     @return avalanche value
+     * Avalanches the bits of an integer by applying the finalization
+     * step of the Murmur3 algorithm.
+     * <p>
+     * Reference: Austin Appleby (2008) in {@link ch.randelshofer.robinhood}.
+     *
+     * @param h a 32-bit integer
+     * @return avalanche value
      */
     public static int murmur3Avalanche(int h) {
         h ^= h >>> 16;
@@ -29,19 +29,19 @@ class AvalancheAlgorithms {
     }
 
     /**
-     Avalanches the bits of an integer by multiplying by the golden ratio and
-     xor-shifting the result.
-     <p>
-     It has slightly worse behaviour than {@link #murmur3Avalanche(int)},
-     but it is much faster.
-     <pre>
-     golden ratio = ɸ = (√5 - 1)/2.
-     phi32 = 2³² ﹒ɸ = 2654435769.497 = 2654435769L = 0x9E3779B9;
-     </pre>
-     Reference: Sebastiano Vigna (2002-2021) in {@link ch.randelshofer.robinhood}.
-
-     @param x a 32-bit integer
-     @return avalanche value
+     * Avalanches the bits of an integer by multiplying by the golden ratio and
+     * xor-shifting the result.
+     * <p>
+     * It has slightly worse behaviour than {@link #murmur3Avalanche(int)},
+     * but it is much faster.
+     * <pre>
+     * golden ratio = ɸ = (√5 - 1)/2.
+     * phi32 = 2³² ﹒ɸ = 2654435769.497 = 2654435769L = 0x9E3779B9;
+     * </pre>
+     * Reference: Sebastiano Vigna (2002-2021) in {@link ch.randelshofer.robinhood}.
+     *
+     * @param x a 32-bit integer
+     * @return avalanche value
      */
     public static int goldenRatioAvalanche(int x) {
         var h = x * 0x9E3779B9;
