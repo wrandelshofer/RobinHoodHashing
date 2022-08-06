@@ -96,8 +96,10 @@ public abstract class AbstractMutableRobinHoodHashSet<E> extends AbstractRobinHo
             capacity = 0;
             resize(0);
         } else {
-            capacity = roundCapacity(max((int) (size / fillRatio), size));
-            resize(capacity);
+            int newCapacity = roundCapacity(max((int) (size / fillRatio), size));
+            if (newCapacity != capacity) {
+                resize(newCapacity);
+            }
         }
     }
 }

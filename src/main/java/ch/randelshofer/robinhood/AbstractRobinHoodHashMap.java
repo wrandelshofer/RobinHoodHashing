@@ -17,6 +17,11 @@ public abstract class AbstractRobinHoodHashMap<K, V> extends AbstractRobinHoodHa
         super(expectedSize, loadFactor);
     }
 
+    @Override
+    protected int roundCapacity(int desiredCapacity) {
+        return Math.min(1 << 29, desiredCapacity);
+    }
+
     protected void clear() {
         if (size != 0) {
             clearTable();
@@ -28,8 +33,7 @@ public abstract class AbstractRobinHoodHashMap<K, V> extends AbstractRobinHoodHa
     protected abstract void clearTable();
 
     public boolean containsKey(Object o) {
-        boolean b = find(o, hash(o, capacity)) >= 0;
-        return b;
+        return find(o, hash(o, capacity)) >= 0;
     }
 
     public boolean containsValue(Object value) {
@@ -87,11 +91,11 @@ public abstract class AbstractRobinHoodHashMap<K, V> extends AbstractRobinHoodHa
 
     protected V get(Object o) {
         var h = hash(o, capacity);
-        var index = find(o, h);
-        if (index < 0) {
+        var result = find(o, h);
+        if (result < 0) {
             return null;
         } else {
-            return getValueFromTable(index);
+            return getValueFromTable(result);
         }
     }
 
@@ -144,8 +148,9 @@ public abstract class AbstractRobinHoodHashMap<K, V> extends AbstractRobinHoodHa
     @SuppressWarnings("unchecked")
     protected void resize(int newCapacity) {
         Object[] objects = toArray();
-        computeThreshold(newCapacity);
+        computeThreshold(size, newCapacity);
         createTable(newCapacity);
+        capacity = newCapacity;
         for (var i = 0; i < objects.length; i += 2) {
             var o = objects[i];
             int result = find(o, hash(o, newCapacity));

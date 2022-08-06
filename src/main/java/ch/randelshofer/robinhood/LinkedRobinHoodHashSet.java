@@ -14,6 +14,7 @@ import static ch.randelshofer.robinhood.RangeAlgorithms.fastRange;
 /**
  Linked Robin Hood Hash Set.
  <ul>
+ <li>Supports up to 2<sup>30</sup> elements.</li>
  <li>Elements are distinguished by their {@link Object#equals} method,
  and are hashed using their {@link Object#hashCode} method.</li>
  <li>Iteration order is the same as the order in which elements
@@ -120,6 +121,7 @@ public class LinkedRobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet<E
 
     @Override
     protected int hash(Object e, int length) {
+        //return moduloRange(goldenRatioAvalanche(Objects.hashCode(e)), length);
         return fastRange(goldenRatioAvalanche(Objects.hashCode(e)), length);
     }
 
@@ -169,8 +171,9 @@ public class LinkedRobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet<E
     }
 
     protected void resize(int newCapacity) {
-        computeThreshold(newCapacity);
+        computeThreshold(size, newCapacity);
         createTable(newCapacity);
+        capacity = newCapacity;
         for (Entry<E> current = first; current != null; current = current.next) {
             final E o = current.element;
             int result = find(o, hash(o, newCapacity));

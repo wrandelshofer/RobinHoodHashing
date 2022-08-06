@@ -106,9 +106,9 @@ public class RangeAlgorithms {
      can be used as a length with {@link #powerOf2Range(int, int)}.
 
      @param value a value
-     @return the value rounded up to a power of two.
+     @return the value rounded up to a power of two, clamped to {@literal [0, 1<<30]}.
      */
     public static int roundUpToPowerOf2(int value) {
-        return Math.max(0, Integer.highestOneBit(value + value - 1));
+        return Math.min(1 << 30, Integer.highestOneBit(value + (value << 1)));
     }
 }

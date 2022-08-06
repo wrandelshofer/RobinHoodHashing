@@ -10,13 +10,14 @@ import static ch.randelshofer.robinhood.AvalancheAlgorithms.goldenRatioAvalanche
 import static ch.randelshofer.robinhood.RangeAlgorithms.fastRange;
 
 /**
- Robin Hood Hash Set.
- <ul>
- <li>Elements are distinguished by their {@link Object#equals} method,
- and are hashed using their {@link Object#hashCode} method.</li>
- <li>Iteration order is not guaranteed.</li>
- <li>Does not allow {@code null} values.</li>
- </ul>
+ * Robin Hood Hash Set.
+ * <ul>
+ * <li>Supports up to 2<sup>30</sup> elements.</li>
+ * <li>Elements are distinguished by their {@link Object#equals} method,
+ * and are hashed using their {@link Object#hashCode} method.</li>
+ * <li>Iteration order is not guaranteed.</li>
+ * <li>Does not allow {@code null} values.</li>
+ * </ul>
  */
 public class RobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet<E>
         implements Cloneable {
@@ -24,13 +25,33 @@ public class RobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet<E>
     private Object[] table;
 
 
+    /**
+     * Creates a new, empty set with the default expected size (0)
+     * and default load factor (0.5).
+     */
     public RobinHoodHashSet() {
     }
 
+    /**
+     * Creates a new, empty set with the specified expected size
+     * and default load factor (0.5).
+     *
+     * @param expectedSize the expected size of the set
+     * @throws IllegalArgumentException if the expected size is less than zero
+     */
     public RobinHoodHashSet(int expectedSize) {
         super(expectedSize);
     }
 
+    /**
+     * Creates a new, empty set with the specified expected size
+     * and load factor.
+     *
+     * @param expectedSize the expected size of the set
+     * @param loadFactor   the load factor of the set
+     * @throws IllegalArgumentException if the expected size is less than zero,
+     *                                  or if the load factor is non-positive
+     */
     public RobinHoodHashSet(int expectedSize, float loadFactor) {
         super(expectedSize, loadFactor);
     }
@@ -51,6 +72,7 @@ public class RobinHoodHashSet<E> extends AbstractMutableRobinHoodHashSet<E>
     @Override
     public RobinHoodHashSet<E> clone() {
         try {
+            @SuppressWarnings("unchecked")
             RobinHoodHashSet<E> that = (RobinHoodHashSet<E>) super.clone();
             that.table = this.table.clone();
             return that;

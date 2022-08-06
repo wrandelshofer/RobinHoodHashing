@@ -10,7 +10,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public abstract class AbstractSetTest {
@@ -145,17 +147,17 @@ public abstract class AbstractSetTest {
 
 
         for (int i = 0; i < list.size(); i++) {
-            System.out.println("adding " + list.get(i));
+            //System.out.println("adding " + list.get(i));
             set.add(list.get(i));
-            if (!set.containsAll(list.subList(0, i + 1))) {
+            /*if (!set.containsAll(list.subList(0, i + 1))) {
                 System.out.println(set);
-            }
+            }*/
             assertTrue(set.containsAll(list.subList(0, i + 1)));
             assertFalse(containsAny(set, list.subList(i + 1, list.size())));
         }
 
         for (int i = 0; i < list.size(); i++) {
-            System.out.println("removing " + list.get(i));
+            //System.out.println("removing " + list.get(i));
             boolean remove = set.remove(list.get(i));
             assertTrue(remove, "successfully removed " + list.get(i));
 
@@ -222,6 +224,60 @@ public abstract class AbstractSetTest {
         return false;
     }
 
-    public static record Key(int id) {
+    public record Key(int id) {
+    }
+
+    @Test
+    public void shouldSupportExpectedSizeUpToMaxValue() {
+        create(Integer.MAX_VALUE, 0.1f);
+    }
+
+    @Test
+    public void shouldRejectNegativeExpectedSIze() {
+        assertThrows(IllegalArgumentException.class, () -> create(-1, 0.1f));
+    }
+
+    @Test
+    public void shouldSupportLoadFactorUpToMaxValue() {
+        create(Integer.MAX_VALUE, Float.MAX_VALUE);
+    }
+
+    @Test
+    public void shouldRejectLoadFactorNaN() {
+        assertThrows(IllegalArgumentException.class, () -> create(Integer.MAX_VALUE, Float.NaN));
+    }
+
+    @Test
+    public void shouldRejectLoadFactorZero() {
+        assertThrows(IllegalArgumentException.class, () -> create(Integer.MAX_VALUE, 0f));
+    }
+
+    @Test
+    public void shouldBeAbleToGrowBeyondMaxValue() {
+        int endExclusive = 10;
+        Set<Integer> set = create(Integer.MAX_VALUE, (float) (endExclusive - 1) / Integer.MAX_VALUE);
+        IntStream.range(0, endExclusive).forEach(set::add);
+        assertEquals(set.size(), endExclusive);
+        assertTrue(set.contains(endExclusive - 1));
+    }
+
+    @Test
+    public void shouldWorkWithLoadFactor1() {
+        Set<Key> set = create(16, 1f);
+
+        List<Key> list = Arrays.asList(FIVE, SIX, SEVEN, EIGHT);
+
+        for (int i = 0; i < list.size(); i++) {
+            set.add(list.get(i));
+            assertTrue(set.containsAll(list.subList(0, i + 1)));
+            assertFalse(containsAny(set, list.subList(i + 1, list.size())));
+        }
+
+        for (int i = 0; i < list.size(); i++) {
+            boolean remove = set.remove(list.get(i));
+            assertTrue(remove, "removing " + list.get(i));
+            assertTrue(set.containsAll(list.subList(i + 1, list.size())), "failed to remove " + list.get(i));
+            assertFalse(containsAny(set, list.subList(0, i)));
+        }
     }
 }

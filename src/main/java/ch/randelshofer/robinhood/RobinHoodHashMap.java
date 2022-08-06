@@ -6,11 +6,12 @@ import java.util.Map;
 import java.util.Objects;
 
 import static ch.randelshofer.robinhood.AvalancheAlgorithms.goldenRatioAvalanche;
-import static ch.randelshofer.robinhood.RangeAlgorithms.fastRange;
+import static ch.randelshofer.robinhood.RangeAlgorithms.moduloRange;
 
 /**
  Robin Hood Hash Map.
  <ul>
+ <li>Supports up to 2<sup>29</sup> entries.</li>
  <li>Elements are distinguished by their {@link Object#equals} method,
  and are hashed using their {@link Object#hashCode} method.</li>
  <li>Iteration order is not guaranteed.</li>
@@ -92,7 +93,8 @@ public class RobinHoodHashMap<K, V> extends AbstractMutableRobinHoodHashMap<K, V
 
     @Override
     protected int hash(Object e, int length) {
-        return fastRange(goldenRatioAvalanche(Objects.hashCode(e)), length);
+        return moduloRange(goldenRatioAvalanche(Objects.hashCode(e)), length);
+        //return fastRange(goldenRatioAvalanche(Objects.hashCode(e)), length);
     }
 
     @Override

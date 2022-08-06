@@ -22,8 +22,8 @@ abstract class AbstractRobinHoodHashSet<E> extends AbstractRobinHoodHashing<E> i
         super(expectedSize);
     }
 
-    public AbstractRobinHoodHashSet(int initialCapacity, float loadFactor) {
-        super(initialCapacity, loadFactor);
+    public AbstractRobinHoodHashSet(int expectedSize, float loadFactor) {
+        super(expectedSize, loadFactor);
     }
 
     protected boolean add(E e) {
@@ -33,7 +33,7 @@ abstract class AbstractRobinHoodHashSet<E> extends AbstractRobinHoodHashing<E> i
                 grow();
                 result = find(e, hash(e, capacity));
             }
-            var index = -result - 1;
+            var index = ~result;
             shiftForInsertion(index);
             setKeyInTable(index, e);
             size++;
@@ -184,12 +184,13 @@ abstract class AbstractRobinHoodHashSet<E> extends AbstractRobinHoodHashing<E> i
     @SuppressWarnings("unchecked")
     protected void resize(int newCapacity) {
         Object[] objects = toArray();
-        computeThreshold(newCapacity);
+        computeThreshold(size, newCapacity);
         createTable(newCapacity);
+        capacity = newCapacity;
         for (Object o : objects) {
             @SuppressWarnings("RedundantExplicitVariableType") E e = (E) o;
             int result = find(o, hash(o, newCapacity));
-            var index = -result - 1;
+            var index = ~result;
             shiftForInsertion(index);
             setKeyInTable(index, e);
         }
